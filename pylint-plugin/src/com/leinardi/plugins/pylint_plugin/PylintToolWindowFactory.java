@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class PylintToolWindowFactory implements ToolWindowFactory, DumbAware {
     final public static String DEFAULT_PYLINT_PATH_SUFFIX = "";
-    final public static String DEFAULT_PYLINT_COMMAND = "pylint --msg-template='{path}:{line:d}: {C}: {msg} ({symbol})' .";
+    final public static String DEFAULT_PYLINT_COMMAND = "pylint --msg-template='{path}:{line:d}: {C}: [{C}]: {msg} ({symbol})' .";
     final public static String PYLINT_PLUGIN_ID = "Pylint Terminal";
     final public static HashMap<Project, PylintTerminal> instances = new HashMap<>();
 
