@@ -1,13 +1,15 @@
 package com.leinardi.plugins.pylint_plugin;
 
-import com.leinardi.plugins.pylint_plugin.model.PylintViolation;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
+import com.leinardi.plugins.pylint_plugin.model.PylintViolation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import javax.swing.UIManager;
+import java.awt.Color;
+import java.awt.Dimension;
 
 class PylintCellRenderer extends ColoredListCellRenderer {
 
@@ -15,11 +17,14 @@ class PylintCellRenderer extends ColoredListCellRenderer {
         setOpaque(true);
     }
 
+    private static final int LINE_WIDTH = 5;
+    private static final int GAP = 10;
+    private static final String TAB = "     ";
+
     @Override
-    protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected, boolean hasFocus) {
-        int LINE_WIDTH = 5;
-        int GAP = 10;
-        String TAB = "     ";
+    protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected,
+                                         boolean hasFocus) {
+
         PylintViolation error = (PylintViolation) value;
         setFont(list.getFont());
         setToolTipText(null);

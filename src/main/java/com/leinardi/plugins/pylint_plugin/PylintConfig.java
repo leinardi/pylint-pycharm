@@ -5,7 +5,10 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import icons.PylintIcons;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class PylintConfig extends DialogWrapper {
     private JPanel contentPane;
@@ -49,7 +52,7 @@ public class PylintConfig extends DialogWrapper {
     }
 
     public ValidationInfo doValidate() {
-        if(this.command.getText().equals("")) {
+        if (this.command.getText().equals("")) {
             return new ValidationInfo("Command cannot be empty", this.command);
         }
         return null;

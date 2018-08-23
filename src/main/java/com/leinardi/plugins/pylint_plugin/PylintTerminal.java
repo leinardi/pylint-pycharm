@@ -1,7 +1,5 @@
 package com.leinardi.plugins.pylint_plugin;
 
-import com.leinardi.plugins.pylint_plugin.model.PylintViolation;
-import com.leinardi.plugins.pylint_plugin.model.PylintResult;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -22,14 +20,26 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.leinardi.plugins.pylint_plugin.model.PylintResult;
+import com.leinardi.plugins.pylint_plugin.model.PylintViolation;
 import icons.PylintIcons;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,19 +53,19 @@ import java.util.regex.Pattern;
 import static java.lang.Integer.max;
 
 public class PylintTerminal {
-    final static String REFACTOR_RE = ".+: R:.+";
-    final static String CONVENTION_RE = ".+: C:.+";
-    final static String WARNING_RE = ".+: W:.+";
-    final static String ERROR_RE = ".+: E:.+";
-    final static String FATAL_RE = ".+: F:.+";
-    final static String RATING_RE = "^Your code has been rated.*";
+    static final String REFACTOR_RE = ".+: R:.+";
+    static final String CONVENTION_RE = ".+: C:.+";
+    static final String WARNING_RE = ".+: W:.+";
+    static final String ERROR_RE = ".+: E:.+";
+    static final String FATAL_RE = ".+: F:.+";
+    static final String RATING_RE = "^Your code has been rated.*";
 
-    final static int GRAY = 12632256;
-    final static int DARK_GRAY = 7368816;
-    final static int LIGHT_GREEN = 13500365;
-    final static int LIGHT_RED = 16764365;
-    final static int BLACK = 0;
-    final static int WHITE = 16777215;
+    static final int GRAY = 12632256;
+    static final int DARK_GRAY = 7368816;
+    static final int LIGHT_GREEN = 13500365;
+    static final int LIGHT_RED = 16764365;
+    static final int BLACK = 0;
+    static final int WHITE = 16777215;
 
     private JPanel pylintToolWindowContent;
     private JBList<PylintViolation> errorsList;
@@ -92,50 +102,11 @@ public class PylintTerminal {
         }
     }
 
-    // This was replaced by global actions
-    /*
-    private void bindListAction(Action action, String keystroke, String tag) {
-        action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(keystroke));
-        errorsList.getActionMap().put(tag, action);
-        errorsList.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                (KeyStroke) action.getValue(Action.ACCELERATOR_KEY), tag);
-    } */
-
     public void initUI(ToolWindow toolWindow) {
         errorsList.getEmptyText().setText("");
         errorsList.setListData(new PylintViolation[]{});
         runner = new PylintRunner(errorsList, project);
         rightIndex = 0;
-        // These don't help with button/status margin.
-        /*
-        pylintRun.setMargin(JBUI.insets(0));
-        pylintRun.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        pylintStatus.setMargin(JBUI.insets(0));
-        pylintStatus.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-       */
-
-        // Hotkey action bindings. (replaced by global actions)
-        /*
-        bindListAction(new AbstractAction("copyPylint") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (PylintTerminal.this.runner.isRunning()) {
-                    return;
-                }
-                PylintViolation error = PylintTerminal.this.errorsList.getSelectedValue();
-                if (error == null) { // no errors
-                    return;
-                }
-                if (error.getLevel() == PylintViolation.HEADER) {
-                    return;
-                }
-                StringSelection selection = new StringSelection(error.getRaw());
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, selection);
-            }
-        }, "control shift C", "copyPylintAction");
-        */
-
         // List popup menu.
 
         JBPopupMenu popup = new JBPopupMenu();
@@ -424,15 +395,15 @@ public class PylintTerminal {
         if (error.isViolation()) {
             String file = error.getFile();
             int lineno = max(error.getLine() - 1, 0);
-            int col_offset = max(error.getColumn() - 1, 0);
+            int colOffset = max(error.getColumn() - 1, 0);
             VirtualFile vf = LocalFileSystem.getInstance().findFileByPath(directory + File.separator + file);
             // May be null if an error is shown in a file beyond rSERVER
             // (e.g. typeshed or a deleted file because of a bug).
             if (vf != null) {
-                FileEditor[] f_editors = FileEditorManagerEx.getInstanceEx(project).openFile(vf, true);
-                if (f_editors[0] instanceof TextEditor) {
-                    Editor editor = ((TextEditor) f_editors[0]).getEditor();
-                    LogicalPosition pos = new LogicalPosition(lineno, col_offset);
+                FileEditor[] fileEditors = FileEditorManagerEx.getInstanceEx(project).openFile(vf, true);
+                if (fileEditors[0] instanceof TextEditor) {
+                    Editor editor = ((TextEditor) fileEditors[0]).getEditor();
+                    LogicalPosition pos = new LogicalPosition(lineno, colOffset);
                     editor.getCaretModel().getPrimaryCaret().moveToLogicalPosition(pos);
                     editor.getSelectionModel().selectLineAtCaret();
                     editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
