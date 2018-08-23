@@ -2,7 +2,7 @@
     <id>com.leinardi.plugins.pylint_plugin</id>
     <name>Pylint plugin</name>
     <version>0.1.0</version>
-    <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Pylint Plugin</vendor>
+    <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Roberto Leinardi</vendor>
 
     <description><![CDATA[
       <p>
@@ -29,7 +29,7 @@
          on how to target different products -->
     <!-- uncomment to enable plugin in all products -->
     <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.python</depends>
+    <!--<depends>com.intellij.modules.python</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Pylint Terminal" icon="PylintIcons.PYLINT_SMALL" anchor="bottom"
