@@ -1,5 +1,37 @@
+buildscript {
+    repositories {
+        apply from: 'dependencies.gradle'
+        addRepos(repositories)
+    }
+    dependencies {
+        classpath deps.errorprone_plugin
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
 plugins {
     id 'org.jetbrains.intellij' version '0.3.7'
+}
+
+apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'checkstyle'
+
+checkstyle {
+    ignoreFailures = false // Whether this task will ignore failures and continue running the build.
+    configFile rootProject.file('config/checkstyle/checkstyle.xml')
+    // The Checkstyle configuration file to use.
+    toolVersion = '8.12' // The version of Checkstyle you want to be used
+}
+
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
+repositories {
+    addRepos(repositories)
 }
 
 group 'com.leinardi.plugins'

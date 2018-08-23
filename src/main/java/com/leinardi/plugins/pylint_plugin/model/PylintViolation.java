@@ -1,14 +1,14 @@
 package com.leinardi.plugins.pylint_plugin.model;
 
 public class PylintViolation {
-    public final static int DEBUG = 0;
-    public final static int REFACTOR = 1;
-    public final static int CONVENTION = 2;
-    public final static int WARNING = 3;
-    public final static int ERROR = 4;
-    public final static int FATAL = 5;
-    public final static int HEADER = -1; // not a real error, just a separator
-    private final static String SPLIT_REG_EX = ": [RCWEF]:";
+    public static final int DEBUG = 0;
+    public static final int REFACTOR = 1;
+    public static final int CONVENTION = 2;
+    public static final int WARNING = 3;
+    public static final int ERROR = 4;
+    public static final int FATAL = 5;
+    public static final int HEADER = -1; // not a real error, just a separator
+    private static final String SPLIT_REG_EX = ": [RCWEF]:";
 
     private int level;
     private String file;

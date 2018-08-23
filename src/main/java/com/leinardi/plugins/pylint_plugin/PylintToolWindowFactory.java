@@ -9,20 +9,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-
 public class PylintToolWindowFactory implements ToolWindowFactory, DumbAware {
-    final public static String DEFAULT_PYLINT_PATH_SUFFIX = "";
-    final public static String DEFAULT_PYLINT_COMMAND = "pylint --msg-template='{path}:{line:d}: {C}: [{C}]: {msg} ({symbol})' .";
-    final public static String PYLINT_PLUGIN_ID = "Pylint Terminal";
-    final public static HashMap<Project, PylintTerminal> instances = new HashMap<>();
+    public static final String DEFAULT_PYLINT_PATH_SUFFIX = "";
+    public static final String DEFAULT_PYLINT_COMMAND = "pylint --msg-template='{path}:{line:d}: {C}: [{C}]: {msg} " +
+            "({symbol})' .";
+    public static final String PYLINT_PLUGIN_ID = "Pylint Terminal";
+    public static final HashMap<Project, PylintTerminal> INSTANCES = new HashMap<>();
 
+    @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         PylintTerminal terminal = new PylintTerminal(project);
         terminal.initUI(toolWindow);
-        instances.put(project, terminal);
+        INSTANCES.put(project, terminal);
     }
 
     public static PylintTerminal getPylintTerminal(Project project) {
-        return instances.get(project);
+        PylintTerminal pylintTerminal = INSTANCES.get(project);
+        if (pylintTerminal == null) {
+            throw new IllegalStateException("PylintTerminal is null!");
+        }
+        return pylintTerminal;
     }
 }
