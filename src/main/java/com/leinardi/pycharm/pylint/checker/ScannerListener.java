@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.checker;
 
+import com.intellij.psi.PsiFile;
+import com.leinardi.pycharm.pylint.exception.PylintPluginException;
+
+import java.util.List;
+import java.util.Map;
+
+public interface ScannerListener {
+
+    void scanStarting(List<PsiFile> filesToScan);
+
+    void filesScanned(int count);
+
+    void scanCompletedSuccessfully(/*ConfigurationLocationResult configurationLocationResult,*/
+            Map<PsiFile, List<Problem>> scanResults);
+
+    void scanFailedWithError(PylintPluginException error);
+
+}

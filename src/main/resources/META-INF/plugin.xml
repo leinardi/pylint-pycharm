@@ -1,61 +1,161 @@
+<!--
+  ~ Copyright 2018 Roberto Leinardi.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <idea-plugin>
-    <id>com.leinardi.plugins.pylint_plugin</id>
-    <name>Pylint plugin</name>
-    <version>0.1.0</version>
+    <id>com.leinardi.pycharm.pylint</id>
+    <name>Pylint</name>
+    <version>0.2.0</version>
     <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Roberto Leinardi</vendor>
 
     <description><![CDATA[
-      <p>
-      Pylint integration plugin.
-      </p>
-      <p>
-      The plugin provides a simple terminal to run pylint from PyCharm with a single click or hotkey and easily
-      navigate through type checking results. The idea of the pylint terminal is different from the normal PyCharm
-      type checking that highlights the violations in a current file. The pylint terminal shows violations in all files in
-      your project (even in those not currently open). Pylint is a Python source code analyzer which looks for
-      programming violations, helps enforcing a coding standard and sniffs for some code smells (as defined in
-      Martin Fowler's Refactoring book).
-      </p>
-      </br>
-      <p>
-      This plugin is an adaptation for Pylint of the Dropbox mypy-PyCharm-plugin.
-      </p>
+<p>
+    This plugin provides on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
+</p>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="145.0"/>
+    <idea-version since-build="182.3911.36"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <!-- uncomment to enable plugin in all products -->
     <depends>com.intellij.modules.lang</depends>
-    <!--<depends>com.intellij.modules.python</depends>-->
+    <!--suppress PluginXmlValidity -->
+    <depends>com.intellij.modules.python</depends>
+
+    <change-notes>
+        <![CDATA[
+<ul>
+    <li>0.2.0: New: UX based on Checkstyle-IDEA plugin.</li>
+    <li>0.2.0: New: Plugin id and name changed (please remove manually the old plugin).</li>
+    <li>0.1.0: Initial release.</li>
+</ul>
+        ]]>
+    </change-notes>
+
+    <project-components>
+        <component>
+            <implementation-class>com.leinardi.pycharm.pylint.PylintPlugin</implementation-class>
+            <interface-class>com.leinardi.pycharm.pylint.PylintPlugin</interface-class>
+        </component>
+    </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Pylint Terminal" icon="PylintIcons.PYLINT_SMALL" anchor="bottom"
-                    factoryClass="com.leinardi.plugins.pylint_plugin.PylintToolWindowFactory"/>
-        <projectService serviceInterface="com.leinardi.plugins.pylint_plugin.PylintConfigService"
-                        serviceImplementation="com.leinardi.plugins.pylint_plugin.PylintConfigService"/>
+        <toolWindow id="Pylint"
+                    anchor="bottom"
+                    canCloseContents="false"
+                    factoryClass="com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowFactory"
+                    icon="/com/leinardi/pycharm/pylint/images/pylint.png"/>
     </extensions>
 
     <actions>
-        <action id="Toggle Pylint Window" class="com.leinardi.plugins.pylint_plugin.actions.ShowPylintWindow"
-                text="Toggle pylint window">
-        </action>
-        <action id="Run Pylint" class="com.leinardi.plugins.pylint_plugin.actions.RunPylint"
-                text="Run pylint">
-        </action>
-        <action id="Previous Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.PrevViolation"
-                text="Go to previous pylint violation">
-        </action>
-        <action id="Next Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.NextViolation"
-                text="Go to next pylint violation">
-        </action>
-        <action id="Copy Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.CopyViolation"
-                text="Copy text of current pylint violation">
-        </action>
-        <action id="Expand Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.ExpandViolations"
-                text="Collapse/expand pylint violations in file">
-        </action>
+
+        <group id="PylintPluginTreeActions" text="Filter" popup="true">
+            <action id="PylintScrollToSourceAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScrollToSource"
+                    text="Autoscroll to Source"
+                    description="Auto-scroll to the source location of errors and warnings"
+                    icon="/general/autoscrollToSource.png"/>
+
+            <action id="PylintExpandAllAction"
+                    class="com.leinardi.pycharm.pylint.actions.ExpandAll"
+                    text="Expand All"
+                    description="Expand all elements in the tool window"
+                    icon="/actions/expandall.png"/>
+
+            <action id="PylintCollapseAllAction"
+                    class="com.leinardi.pycharm.pylint.actions.CollapseAll"
+                    text="Collapse All"
+                    description="Collapse all elements in the tool window"
+                    icon="/actions/collapseall.png"/>
+
+            <separator/>
+
+            <action id="PylintDisplayErrorsAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayErrors"
+                    text="Display Errors"
+                    description="Display error results"
+                    icon="/compiler/error.png"/>
+
+            <action id="PylintDisplayWarningsAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayWarnings"
+                    text="Display Warnings"
+                    description="Display warning results"
+                    icon="/compiler/warning.png"/>
+
+            <action id="PylintDisplayInfoAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayInfo"
+                    text="Display Information Results"
+                    description="Display information results"
+                    icon="/compiler/information.png"/>
+        </group>
+
+        <group id="PylintPluginActions" text="Pylint" popup="true">
+            <action id="PylintCloseAction"
+                    class="com.leinardi.pycharm.pylint.actions.Close"
+                    text="Close Pylint Window"
+                    description="Close the Pylint tool window"
+                    icon="/actions/cancel.png"/>
+
+            <action id="PylintStopCheck"
+                    class="com.leinardi.pycharm.pylint.actions.StopCheck"
+                    text="Stop the running scan"
+                    description="Stop the scan currently being run"
+                    icon="/actions/suspend.png">
+            </action>
+
+            <separator/>
+
+            <action id="PylintCurrentFileAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScanCurrentFile"
+                    text="Check Current File"
+                    description="Run Pylint on the current file in the editor"
+                    icon="/actions/execute.png">
+
+                <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            </action>
+
+            <action id="PylintModuleFilesAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScanModule"
+                    text="Check Module"
+                    description="Run Pylint on all files in the current module"
+                    icon="/modules/modulesNode.png">
+            </action>
+
+            <action id="PylintProjectFilesAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScanProject"
+                    text="Check Project"
+                    description="Run Pylint on all files in the current project"
+                    icon="/general/projectTab.png">
+            </action>
+
+            <action id="PylintModifiedFilesAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScanModifiedFiles"
+                    text="Check All Modified Files"
+                    description="Run Pylint on all modified files"
+                    icon="/general/toolWindowChanges.png">
+            </action>
+
+            <action id="PylintDefaultChangeListAction"
+                    class="com.leinardi.pycharm.pylint.actions.ScanCurrentChangeList"
+                    text="Check Files in the Current Change List"
+                    description="Run Pylint on the current change list"
+                    icon="/general/smallConfigurableVcs.png">
+            </action>
+
+        </group>
     </actions>
 </idea-plugin>

@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.exception;
 
+/**
+ * Common exception thrown anywhere in this plugin.
+ */
+public class PylintPluginException extends RuntimeException {
+
+    private static final long serialVersionUID = 2L;
+
+    public PylintPluginException(final String message) {
+        super(message);
+    }
+
+    public PylintPluginException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+}

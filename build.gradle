@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 Roberto Leinardi.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 buildscript {
     repositories {
         apply from: 'dependencies.gradle'
@@ -14,8 +30,14 @@ plugins {
     id 'org.jetbrains.intellij' version '0.3.7'
 }
 
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
 apply plugin: 'net.ltgt.errorprone'
 apply plugin: 'checkstyle'
+
+def hasPyCharm = project.hasProperty('pycharmPath')
+def hasPythonPlugin = project.hasProperty('pythonPlugin')
 
 checkstyle {
     ignoreFailures = false // Whether this task will ignore failures and continue running the build.
@@ -30,24 +52,38 @@ gradle.projectsEvaluated {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
 }
-repositories {
-    addRepos(repositories)
-}
 
 group 'com.leinardi.plugins'
 version '0.1.0'
-
-apply plugin: "org.jetbrains.intellij"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
-    version = 'IC-2018.2.1'
-    alternativeIdePath = '/home/leinardi/pycharm-community'
+    version ideaVersion
+    pluginName 'Pylint'
+    downloadSources Boolean.valueOf(downloadIdeaSources)
+    if (hasPyCharm) {
+        alternativeIdePath pycharmPath
+    } else if (hasPythonPlugin) {
+        plugins += [pythonPlugin]
+    } else {
+        throw new StopActionException("Define either pycharmPath or pythonPlugin in your gradle.properties")
+    }
 }
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+
+repositories {
+    addRepos(repositories)
+    if (hasPyCharm) {
+        flatDir {
+            dirs "$pycharmPath/lib"
+        }
+    }
+}
+
+dependencies {
+    if (hasPyCharm) {
+        compileOnly name: 'pycharm'
+    }
+    compile 'com.squareup.moshi:moshi:1.6.0'
 }
