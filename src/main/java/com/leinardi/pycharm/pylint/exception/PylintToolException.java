@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.exception;
 
+/**
+ * Wrapper for an exception that occurred in the Pylint tool itself.
+ * <p><b>Important:</b> Be sure to throw it <em>only</em> from the 'csaccess' sourceset!</p>
+ */
+public class PylintToolException extends PylintServiceException {
+
+    public PylintToolException(String message) {
+        super(message);
+    }
+
+    public PylintToolException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

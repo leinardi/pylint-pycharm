@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.exception;
 
+/**
+ * An exception that originates with the Pylint access layer (aka Pylint plugin service), but is <em>not</em>
+ * a native PylintException.
+ * <p><b>Important:</b> Be sure to throw it <em>only</em> from the 'csaccess' sourceset!</p>
+ */
+public class PylintServiceException extends PylintPluginException {
+
+    public PylintServiceException(final String message) {
+        super(message);
+    }
+
+    public PylintServiceException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+}

@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.plapi;
 
+import com.squareup.moshi.Json;
+
+/**
+ * Pylint violation severity levels supported by this plugin.
+ */
+public enum SeverityLevel {
+    @Json(name = "refactor")
+    REFACTOR,
+    @Json(name = "convention")
+    CONVENTION,
+    @Json(name = "warning")
+    WARNING,
+    @Json(name = "error")
+    ERROR,
+    @Json(name = "fatal")
+    FATAL
+}

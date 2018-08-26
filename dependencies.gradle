@@ -41,6 +41,7 @@ ext.build_versions = build_versions
 static def addRepos(RepositoryHandler handler) {
     handler.jcenter()
     handler.mavenCentral()
+    handler.maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
     handler.maven { url "https://plugins.gradle.org/m2/" }
 }
 

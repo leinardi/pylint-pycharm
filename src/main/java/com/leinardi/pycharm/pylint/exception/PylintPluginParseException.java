@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+package com.leinardi.pycharm.pylint.exception;
 
+public class PylintPluginParseException extends PylintPluginException {
+    private static final long serialVersionUID = -2138216104879079892L;
+
+    public PylintPluginParseException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+}

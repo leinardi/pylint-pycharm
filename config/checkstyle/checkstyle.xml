@@ -110,22 +110,23 @@
             <property name="applyToPackage" value="true"/>
         </module>
         <!--https://source.android.com/source/code-style.html#follow-field-naming-conventions -->
-        <module name="MemberName">
-            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic" value="true"/>
-            <property name="applyToProtected" value="false"/>
-            <property name="applyToPrivate" value="false"/>
-            <property name="applyToPackage" value="false"/>
-        </module>
+        <!--<module name="MemberName">-->
+        <!--&lt;!&ndash; public members should not start with an 'm' &ndash;&gt;-->
+        <!--<property name="format" value="^(?:[a-l|n-z][a-zA-Z0-9]*)$|^(?:m[a-z]+[a-zA-Z0-9]*)$"/>-->
+        <!--<property name="applyToPublic" value="true"/>-->
+        <!--<property name="applyToProtected" value="false"/>-->
+        <!--<property name="applyToPrivate" value="false"/>-->
+        <!--<property name="applyToPackage" value="false"/>-->
+        <!--</module>-->
         <module name="MethodName"/>
         <module name="PackageName"/>
         <module name="ParameterName"/>
         <!--https://source.android.com/source/code-style.html#follow-field-naming-conventions -->
-        <module name="StaticVariableName">
-            <!-- static members should start with an 's' -->
-            <property name="format" value="^s[A-Z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic" value="false"/>
-        </module>
+        <!--<module name="StaticVariableName">-->
+        <!--&lt;!&ndash; static members should start with an 's' &ndash;&gt;-->
+        <!--<property name="format" value="^s[A-Z][a-zA-Z0-9]*$"/>-->
+        <!--<property name="applyToPublic" value="false"/>-->
+        <!--</module>-->
         <module name="TypeName"/>
 
         <!-- Checks for imports                              -->
@@ -136,8 +137,8 @@
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
         <!--<module name="ImportControl">-->
-            <!--<property name="severity" value="error"/>-->
-            <!--<property name="file" value="config/checkstyle/import-control.xml"/>-->
+        <!--<property name="severity" value="error"/>-->
+        <!--<property name="file" value="config/checkstyle/import-control.xml"/>-->
         <!--</module>-->
 
         <!-- Checks for Size Violations.                    -->
