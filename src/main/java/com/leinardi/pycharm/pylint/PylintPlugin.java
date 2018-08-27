@@ -30,7 +30,6 @@ import com.leinardi.pycharm.pylint.checker.ScannerListener;
 import com.leinardi.pycharm.pylint.checker.UiFeedbackScannerListener;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.util.Async;
-import org.apache.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,9 +51,9 @@ public final class PylintPlugin implements ProjectComponent {
     /**
      * The plugin ID. Caution: It must be identical to the String set in build.gradle at intellij.pluginName
      */
-    public static final String ID_PLUGIN = "Pylint-IDEA";
+    public static final String ID_PLUGIN = "Pylint-PyCharm";
 
-    public static final String ID_MODULE_PLUGIN = "Pylint-IDEA-Module";
+//    public static final String ID_MODULE_PLUGIN = "Pylint-PyCharm-Module";
 
     private static final Logger LOG = com.intellij.openapi.diagnostic.Logger.getInstance(PylintPlugin.class);
 
@@ -74,17 +73,6 @@ public final class PylintPlugin implements ProjectComponent {
 
         LOG.info("Pylint Plugin loaded with project base dir: \"" + getProjectPath() + "\"");
 
-        disablePylintLogging();
-    }
-
-    private void disablePylintLogging() {
-        try {
-            // This is a nasty hack to get around IDEA's DialogAppender sending any errors to the Event Log,
-            // which would result in Pylint parse errors spamming the Event Log.
-            org.apache.log4j.Logger.getLogger("com.puppycrawl.tools.pylint.TreeWalker").setLevel(Level.OFF);
-        } catch (Exception e) {
-            LOG.warn("Unable to suppress logging from Pylint's TreeWalker", e);
-        }
     }
 
     public Project getProject() {

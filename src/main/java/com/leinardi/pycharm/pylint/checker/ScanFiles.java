@@ -16,20 +16,18 @@
 
 package com.leinardi.pycharm.pylint.checker;
 
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiInvalidElementAccessException;
 import com.intellij.psi.PsiManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.plapi.Issue;
+import com.leinardi.pycharm.pylint.plapi.ProcessResultsThread;
 import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import com.leinardi.pycharm.pylint.util.Notifications;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,13 +49,10 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
     private static final Logger LOG = Logger.getInstance(ScanFiles.class);
 
     private final List<PsiFile> files;
-    private final Map<Module, Set<PsiFile>> moduleToFiles;
+    //    private final Map<Module, Set<PsiFile>> moduleToFiles;
     private final Set<ScannerListener> listeners = new HashSet<>();
     private final PylintPlugin plugin;
-    private final String baseDir;
     private final int tabWidth = 4;
-
-    private final Map<PsiFile, List<Problem>> problems = new HashMap<>();
 
     public ScanFiles(@NotNull final PylintPlugin pylintPlugin,
                      @NotNull final List<VirtualFile> virtualFiles/*,
@@ -67,8 +61,7 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         //        this.overrideConfigLocation = overrideConfigLocation;
 
         files = findAllFilesFor(virtualFiles);
-        moduleToFiles = mapsModulesToFiles();
-        baseDir = plugin.getProject().getBasePath();
+        //        moduleToFiles = mapsModulesToFiles();
     }
 
     private List<PsiFile> findAllFilesFor(@NotNull final List<VirtualFile> virtualFiles) {
@@ -80,15 +73,15 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return childFiles;
     }
 
-    private Map<Module, Set<PsiFile>> mapsModulesToFiles() {
-        final Map<Module, Set<PsiFile>> modulesToFiles = new HashMap<>();
-        for (final PsiFile file : files) {
-            final Module module = ModuleUtil.findModuleForPsiElement(file);
-            Set<PsiFile> filesForModule = modulesToFiles.computeIfAbsent(module, key -> new HashSet<>());
-            filesForModule.add(file);
-        }
-        return modulesToFiles;
-    }
+    //    private Map<Module, Set<PsiFile>> mapsModulesToFiles() {
+    //        final Map<Module, Set<PsiFile>> modulesToFiles = new HashMap<>();
+    //        for (final PsiFile file : files) {
+    //            final Module module = ModuleUtil.findModuleForPsiElement(file);
+    //            Set<PsiFile> filesForModule = modulesToFiles.computeIfAbsent(module, key -> new HashSet<>());
+    //            filesForModule.add(file);
+    //        }
+    //        return modulesToFiles;
+    //    }
 
     @Override
     public final Map<PsiFile, List<Problem>> call() {
@@ -96,10 +89,9 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
             fireCheckStarting(files);
             //            final Pair<ConfigurationLocationResult, Map<PsiFile, List<Problem>>> scanResult =
             //                    processFilesForModuleInfoAndScan();
-            foo();
-            return scanCompletedSuccessfully(/*scanResult.first, scanResult.second*/ problems);
+            return scanCompletedSuccessfully(checkFiles(new HashSet<>(files)));
         } catch (final InterruptedIOException e) {
-            LOG.debug("Scan cancelled by IDEA", e);
+            LOG.debug("Scan cancelled by PyCharm", e);
             return scanCompletedSuccessfully(/*resultOf(PRESENT),*/ emptyMap());
         } catch (final PylintPluginException e) {
             LOG.warn("An error occurred while scanning a file.", e);
@@ -110,10 +102,10 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         }
     }
 
-    private Map<String, PsiFile> mapFilesToElements(final List<PsiFile> filesToScan) {
+    private Map<String, PsiFile> mapFilesToElements(final List<ScannableFile> filesToScan) {
         final Map<String, PsiFile> filePathsToElements = new HashMap<>();
-        for (PsiFile file : filesToScan) {
-            filePathsToElements.put(file.getVirtualFile().getPath(), file);
+        for (ScannableFile scannableFile : filesToScan) {
+            filePathsToElements.put(scannableFile.getAbsolutePath(), scannableFile.getPsiFile());
         }
         return filePathsToElements;
     }
@@ -125,82 +117,36 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return path;
     }
 
-    private String filenameFrom(final Issue issue) {
-        return withTrailingSeparator(baseDir) + issue.getPath();
-    }
-
-    private void foo() throws InterruptedIOException {
-        Map<String, PsiFile> fileNamesToPsiFiles = mapFilesToElements(files);
-        PylintRunner pylintRunner = new PylintRunner(plugin, fileNamesToPsiFiles.keySet());
-        List<Issue> errors = pylintRunner.scan();
-
-        final Map<PsiFile, List<Integer>> lineLengthCachesByFile = new HashMap<>();
-
-        for (final Issue event : errors) {
-            final PsiFile psiFile = fileNamesToPsiFiles.get(filenameFrom(event));
-            if (psiFile == null) {
-                LOG.info("Could not find mapping for file: " + event.getPath() + " in " + fileNamesToPsiFiles);
-                continue;
-            }
-
-            List<Integer> lineLengthCache = lineLengthCachesByFile.get(psiFile);
-            if (lineLengthCache == null) {
-                // we cache the offset of each line as it is created, so as to
-                // avoid retreating ground we've already covered.
-                lineLengthCache = new ArrayList<>();
-                lineLengthCache.add(0); // line 1 is offset 0
-
-                lineLengthCachesByFile.put(psiFile, lineLengthCache);
-            }
-
-            //            final Position position = findPosition(lineLengthCache, event, psiFile.textToCharArray());
-            //            final PsiElement victim = position.element(psiFile);
-
-            //            if (victim != null) {
-            //                addProblemTo(victim, psiFile, event, position.afterEndOfLine);
-            //            } else {
-            addProblemTo(psiFile, psiFile, event, false);
-            //                LOG.debug("Couldn't find victim for error: " + event.getPath() + "(" + event.getLine()
-            // + ":"
-            //                        + event.getColumn() + ") " + event.getMessage());
-            //            }
-        }
-
-    }
-
-    private void addProblemTo(final PsiElement victim,
-                              final PsiFile psiFile,
-                              @NotNull final Issue event,
-                              final boolean afterEndOfLine) {
+    private Map<PsiFile, List<Problem>> checkFiles(final Set<PsiFile> filesToScan) throws InterruptedIOException {
+        final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
-            addProblem(psiFile,
-                    new Problem(
-                            victim,
-                            event.getMessage(),
-                            event.getSeverityLevel(),
-                            event.getLine(),
-                            event.getColumn(),
-                            event.getSymbol(),
-                            afterEndOfLine,
-                            false));
-        } catch (PsiInvalidElementAccessException e) {
-            LOG.warn("Element access failed", e);
+            scannableFiles.addAll(ScannableFile.createAndValidate(filesToScan, plugin));
+
+            return scan(scannableFiles);
+        } finally {
+            scannableFiles.forEach(ScannableFile::deleteIfRequired);
         }
     }
 
-    @NotNull
-    public Map<PsiFile, List<Problem>> getProblems() {
-        return Collections.unmodifiableMap(problems);
-    }
+    private Map<PsiFile, List<Problem>> scan(final List<ScannableFile> filesToScan) throws InterruptedIOException {
+        Map<String, PsiFile> fileNamesToPsiFiles = mapFilesToElements(filesToScan);
+        List<Issue> errors = PylintRunner.scan(plugin.getProject(), fileNamesToPsiFiles.keySet());
+        String baseDir = plugin.getProject().getBasePath();
+        final ProcessResultsThread findThread = new ProcessResultsThread(false, tabWidth, baseDir,
+                errors, fileNamesToPsiFiles);
 
-    private void addProblem(final PsiFile psiFile, final Problem problem) {
-        List<Problem> problemsForFile = problems.get(psiFile);
-        if (problemsForFile == null) {
-            problemsForFile = new ArrayList<>();
-            problems.put(psiFile, problemsForFile);
+        final Application application = ApplicationManager.getApplication();
+        //        if (application != null) {  // can be null in unit tests
+        // TODO Make sure that this does not block ... it seems that we are not starting a new thread.
+        //      Sometimes, the editor is non-responsive because Checkstyle is still processing results.
+        //      Problem: OpScan currently expects the ready-made list of problems synchronously.
+        if (application.isDispatchThread()) {
+            findThread.run();
+        } else {
+            application.runReadAction(findThread);
         }
-
-        problemsForFile.add(problem);
+        return findThread.getProblems();
+        //        }
     }
 
     private Map<PsiFile, List<Problem>> scanFailedWithError(final PylintPluginException e) {
@@ -275,18 +221,18 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
     //        return pair(resultOf(PRESENT), fileResults);
     //    }
 
-    @NotNull
-    private Map<PsiFile, List<Problem>> filesWithProblems(final Set<PsiFile> filesForModule,
-                                                          final Map<PsiFile, List<Problem>> moduleFileResults) {
-        final Map<PsiFile, List<Problem>> moduleResults = new HashMap<>();
-        for (final PsiFile psiFile : filesForModule) {
-            final List<Problem> resultsForFile = moduleFileResults.get(psiFile);
-            if (resultsForFile != null && !resultsForFile.isEmpty()) {
-                moduleResults.put(psiFile, new ArrayList<>(resultsForFile));
-            }
-        }
-        return moduleResults;
-    }
+    //    @NotNull
+    //    private Map<PsiFile, List<Problem>> filesWithProblems(final Set<PsiFile> filesForModule,
+    //                                                          final Map<PsiFile, List<Problem>> moduleFileResults) {
+    //        final Map<PsiFile, List<Problem>> moduleResults = new HashMap<>();
+    //        for (final PsiFile psiFile : filesForModule) {
+    //            final List<Problem> resultsForFile = moduleFileResults.get(psiFile);
+    //            if (resultsForFile != null && !resultsForFile.isEmpty()) {
+    //                moduleResults.put(psiFile, new ArrayList<>(resultsForFile));
+    //            }
+    //        }
+    //        return moduleResults;
+    //    }
 
     //    @NotNull
     //    private ConfigurationLocationResult configurationLocation(final ConfigurationLocation override,
@@ -321,66 +267,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
     //        return ServiceManager.getService(project, CheckerFactory.class);
     //    }
 
-    @NotNull
-    private Position findPosition(final List<Integer> lineLengthCache, final Issue event, final char[] text) {
-        if (event.getLine() == 0) {
-            return Position.at(event.getColumn());
-        } else if (event.getLine() <= lineLengthCache.size()) {
-            return Position.at(lineLengthCache.get(event.getLine() - 1) + event.getColumn());
-        } else {
-            return searchFromEndOfCachedData(lineLengthCache, event, text);
-        }
-    }
-
-    private char nextCharacter(final char[] text, final int i) {
-        if ((i + 1) < text.length) {
-            return text[i + 1];
-        }
-        return '\0';
-    }
-
-    @NotNull
-    private Position searchFromEndOfCachedData(final List<Integer> lineLengthCache,
-                                               final Issue event,
-                                               final char[] text) {
-        final Position position;
-        int offset = lineLengthCache.get(lineLengthCache.size() - 1);
-        boolean afterEndOfLine = false;
-        int line = lineLengthCache.size();
-
-        int column = 0;
-        for (int i = offset; i < text.length; ++i) {
-            final char character = text[i];
-
-            // for linefeeds we need to handle CR, LF and CRLF,
-            // hence we accept either and only trigger a new
-            // line on the LF of CRLF.
-            final char nextChar = nextCharacter(text, i);
-            if (character == '\n' || (character == '\r' && nextChar != '\n')) {
-                ++line;
-                ++offset;
-                lineLengthCache.add(offset);
-                column = 0;
-            } else if (character == '\t') {
-                column += tabWidth;
-                ++offset;
-            } else {
-                ++column;
-                ++offset;
-            }
-
-            if (event.getLine() == line && event.getColumn() == column) {
-                if (column == 0 && Character.isWhitespace(nextChar)) {
-                    afterEndOfLine = true;
-                }
-                break;
-            }
-        }
-
-        position = Position.at(offset, afterEndOfLine);
-        return position;
-    }
-
     private static class FindChildFiles extends VirtualFileVisitor {
 
         private final VirtualFile virtualFile;
@@ -405,26 +291,4 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         }
     }
 
-    private static final class Position {
-        private final boolean afterEndOfLine;
-        private final int offset;
-
-        public static Position at(final int offset, final boolean afterEndOfLine) {
-            return new Position(offset, afterEndOfLine);
-        }
-
-        public static Position at(final int offset) {
-            return new Position(offset, false);
-        }
-
-        private Position(final int offset, final boolean afterEndOfLine) {
-            this.offset = offset;
-            this.afterEndOfLine = afterEndOfLine;
-        }
-
-        private PsiElement element(final PsiFile psiFile) {
-            return psiFile.findElementAt(offset);
-        }
-
-    }
 }

@@ -28,7 +28,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
-import com.leinardi.pycharm.pylint.util.VfUtil;
+import com.leinardi.pycharm.pylint.util.FileTypes;
 
 import java.util.Arrays;
 
@@ -93,7 +93,7 @@ public class ScanCurrentFile extends BaseAction {
 
         // validate selected file against scan scope
         if (selectedFile != null) {
-            if (!VfUtil.isPythonFileType(selectedFile)) {
+            if (!FileTypes.isPython(selectedFile.getFileType())) {
                 selectedFile = null;
             }
         }

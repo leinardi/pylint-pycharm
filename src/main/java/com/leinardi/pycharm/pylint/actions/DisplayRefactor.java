@@ -29,7 +29,7 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 /**
  * Action to toggle error display in tool window.
  */
-public class DisplayInfo extends ToggleAction {
+public class DisplayRefactor extends ToggleAction {
 
     @Override
     public boolean isSelected(final AnActionEvent event) {
@@ -49,7 +49,7 @@ public class DisplayInfo extends ToggleAction {
 
         final Content content = toolWindow.getContentManager().getContent(0);
         if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
-            return ((PylintToolWindowPanel) content.getComponent()).isDisplayingInfo();
+            return ((PylintToolWindowPanel) content.getComponent()).isDisplayingRefactor();
         }
 
         return false;
@@ -74,7 +74,7 @@ public class DisplayInfo extends ToggleAction {
         final Content content = toolWindow.getContentManager().getContent(0);
         if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
             final PylintToolWindowPanel panel = (PylintToolWindowPanel) content.getComponent();
-            panel.setDisplayingInfo(selected);
+            panel.setDisplayingRefactor(selected);
             panel.filterDisplayedResults();
         }
     }

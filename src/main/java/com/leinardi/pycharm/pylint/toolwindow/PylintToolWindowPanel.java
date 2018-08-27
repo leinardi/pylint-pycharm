@@ -96,7 +96,8 @@ public class PylintToolWindowPanel extends JPanel {
 
     private boolean displayingErrors = true;
     private boolean displayingWarnings = true;
-    private boolean displayingInfo = true;
+    private boolean displayingConvention = true;
+    private boolean displayingRefactor = true;
 
     private JTree resultsTree;
     private JToolBar progressPanel;
@@ -334,11 +335,11 @@ public class PylintToolWindowPanel extends JPanel {
     }
 
     private int lineFor(final ResultTreeNode nodeInfo) {
-        return nodeInfo.getProblem().line();
+        return nodeInfo.getProblem().getLine();
     }
 
     private int columnFor(final ResultTreeNode nodeInfo) {
-        return nodeInfo.getProblem().column();
+        return nodeInfo.getProblem().getColumn();
     }
 
     /**
@@ -525,22 +526,20 @@ public class PylintToolWindowPanel extends JPanel {
 
     private SeverityLevel[] getDisplayedSeverities() {
         final List<SeverityLevel> severityLevels = new ArrayList<>();
-
+        severityLevels.add(SeverityLevel.FATAL);
         if (displayingErrors) {
             severityLevels.add(SeverityLevel.ERROR);
-            severityLevels.add(SeverityLevel.FATAL);
         }
-
         if (displayingWarnings) {
             severityLevels.add(SeverityLevel.WARNING);
         }
-
-        if (displayingInfo) {
+        if (displayingConvention) {
             severityLevels.add(SeverityLevel.CONVENTION);
+        }
+        if (displayingRefactor) {
             severityLevels.add(SeverityLevel.REFACTOR);
         }
-
-        return severityLevels.toArray(new SeverityLevel[severityLevels.size()]);
+        return severityLevels.toArray(new SeverityLevel[0]);
     }
 
     /**
@@ -583,11 +582,19 @@ public class PylintToolWindowPanel extends JPanel {
         this.displayingWarnings = displayingWarnings;
     }
 
-    public boolean isDisplayingInfo() {
-        return displayingInfo;
+    public boolean isDisplayingConvention() {
+        return displayingConvention;
     }
 
-    public void setDisplayingInfo(final boolean displayingInfo) {
-        this.displayingInfo = displayingInfo;
+    public void setDisplayingConvention(final boolean displayingConvention) {
+        this.displayingConvention = displayingConvention;
+    }
+
+    public boolean isDisplayingRefactor() {
+        return displayingRefactor;
+    }
+
+    public void setDisplayingRefactor(final boolean displayingRefactor) {
+        this.displayingRefactor = displayingRefactor;
     }
 }

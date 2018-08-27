@@ -20,7 +20,11 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.psi.PsiElement;
+import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.plapi.SeverityLevel;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public class Problem {
@@ -30,12 +34,14 @@ public class Problem {
     private final int column;
     private final String symbol;
     private final String message;
+    private final String messageId;
     private final boolean afterEndOfLine;
     private final boolean suppressErrors;
 
-    public Problem(@NotNull final PsiElement target,
-                   @NotNull final String message,
-                   @NotNull final SeverityLevel severityLevel,
+    public Problem(final PsiElement target,
+                   final String message,
+                   final String messageId,
+                   final SeverityLevel severityLevel,
                    final int line,
                    final int column,
                    final String symbol,
@@ -43,6 +49,7 @@ public class Problem {
                    final boolean suppressErrors) {
         this.target = target;
         this.message = message;
+        this.messageId = messageId;
         this.severityLevel = severityLevel;
         this.line = line;
         this.column = column;
@@ -54,92 +61,98 @@ public class Problem {
     @NotNull
     public ProblemDescriptor toProblemDescriptor(final InspectionManager inspectionManager) {
         return inspectionManager.createProblemDescriptor(target,
-                "inspection.message, message()",
+                PylintBundle.message("inspection.message", getMessage()),
                 null, problemHighlightType(), false, afterEndOfLine);
     }
 
-    @NotNull
-    public String message() {
-        return message;
-    }
-
-    @NotNull
-    public String symbol() {
-        return symbol;
-    }
-
-    @NotNull
-    public SeverityLevel severityLevel() {
+    public SeverityLevel getSeverityLevel() {
         return severityLevel;
     }
 
-    public int line() {
+    public int getLine() {
         return line;
     }
 
-    public int column() {
+    public int getColumn() {
         return column;
     }
 
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public boolean isAfterEndOfLine() {
+        return afterEndOfLine;
+    }
+
+    public boolean isSuppressErrors() {
+        return suppressErrors;
+    }
+
     private ProblemHighlightType problemHighlightType() {
-        if (!suppressErrors) {
-            switch (severityLevel()) {
-                case ERROR:
-                case FATAL:
-                    return ProblemHighlightType.ERROR;
-                case WARNING:
-                    return ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
-                case REFACTOR:
-                case CONVENTION:
-                    return ProblemHighlightType.WEAK_WARNING;
-                default:
-                    return ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
-            }
-        }
+//        if (!suppressErrors) {
+        //            return ProblemHighlightType.ERROR;
+        //        }
         return ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        final Problem problem = (Problem) o;
-
-        if (line != problem.line) {
-            return false;
-        }
-        if (column != problem.column) {
-            return false;
-        }
-        if (afterEndOfLine != problem.afterEndOfLine) {
-            return false;
-        }
-        if (suppressErrors != problem.suppressErrors) {
-            return false;
-        }
-        if (!target.equals(problem.target)) {
-            return false;
-        }
-        if (severityLevel != problem.severityLevel) {
-            return false;
-        }
-        return message.equals(problem.message);
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("target", target)
+                .append("message", message)
+                .append("messageId", messageId)
+                .append("severityLevel", severityLevel)
+                .append("line", line)
+                .append("column", column)
+                .append("symbol", symbol)
+                .append("afterEndOfLine", afterEndOfLine)
+                .append("suppressErrors", suppressErrors)
+                .toString();
     }
 
     @Override
     public int hashCode() {
-        int result = target.hashCode();
-        result = 31 * result + severityLevel.hashCode();
-        result = 31 * result + line;
-        result = 31 * result + column;
-        result = 31 * result + message.hashCode();
-        result = 31 * result + (afterEndOfLine ? 1 : 0);
-        result = 31 * result + (suppressErrors ? 1 : 0);
-        return result;
+        return new HashCodeBuilder()
+                .append(target)
+                .append(message)
+                .append(messageId)
+                .append(severityLevel)
+                .append(line)
+                .append(column)
+                .append(symbol)
+                .append(afterEndOfLine)
+                .append(suppressErrors)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Problem)) {
+            return false;
+        }
+        Problem rhs = ((Problem) other);
+        return new EqualsBuilder()
+                .append(target, rhs.target)
+                .append(message, rhs.message)
+                .append(messageId, rhs.messageId)
+                .append(severityLevel, rhs.severityLevel)
+                .append(line, rhs.line)
+                .append(column, rhs.column)
+                .append(symbol, rhs.symbol)
+                .append(afterEndOfLine, rhs.afterEndOfLine)
+                .append(suppressErrors, rhs.suppressErrors)
+                .isEquals();
     }
 }

@@ -57,15 +57,17 @@ public class ResultTreeNode {
     /**
      * Construct a file node.
      *
-     * @param fileName     the name of the file.
-     * @param problemCount the number of problems in the file.
+     * @param fileName      the name of the file.
+     * @param problemCounts the number of problems in the file.
      */
-    public ResultTreeNode(final String fileName, final int problemCount) {
+    public ResultTreeNode(final String fileName, final int[] problemCounts) {
         if (fileName == null) {
             throw new IllegalArgumentException("Filename may not be null");
         }
 
-        this.text = PylintBundle.message("plugin.results.scan-file-result", fileName, problemCount);
+        this.text = PylintBundle.message("plugin.results.scan-file-result",
+                fileName,
+                ResultTreeModel.concatProblems(problemCounts));
         icon = Icons.icon("/fileTypes/any_type.png");
     }
 
@@ -80,16 +82,22 @@ public class ResultTreeNode {
         this.file = file;
         this.problem = problem;
 
-        severity = problem.severityLevel();
+        severity = problem.getSeverityLevel();
 
         updateIconsForProblem();
     }
 
     private void updateIconsForProblem() {
-        if (SeverityLevel.ERROR.equals(severity) || SeverityLevel.FATAL.equals(severity)) {
+        if (SeverityLevel.FATAL.equals(severity)) {
+            icon = Icons.icon("/general/exclMark.png");
+        } else if (SeverityLevel.ERROR.equals(severity)) {
             icon = Icons.icon("/general/error.png");
         } else if (SeverityLevel.WARNING.equals(severity)) {
             icon = Icons.icon("/general/warning.png");
+        } else if (SeverityLevel.CONVENTION.equals(severity)) {
+            icon = Icons.icon("/nodes/class.png");
+        } else if (SeverityLevel.REFACTOR.equals(severity)) {
+            icon = Icons.icon("/actions/forceRefresh.png");
         } else {
             icon = Icons.icon("/general/information.png");
         }
@@ -211,7 +219,13 @@ public class ResultTreeNode {
             return text;
         }
 
-        return PylintBundle.message("plugin.results.file-result", file.getName(),
-                problem.message(), problem.line(), Integer.toString(problem.column()), problem.symbol());
+        return PylintBundle.message(
+                "plugin.results.file-result",
+                problem.getMessage(),
+                problem.getLine(),
+                Integer.toString(problem.getColumn()),
+                problem.getSymbol()
+        );
     }
+
 }
