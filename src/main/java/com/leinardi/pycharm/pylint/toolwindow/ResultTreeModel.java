@@ -174,37 +174,41 @@ public class ResultTreeModel extends DefaultTreeModel {
                          final SeverityLevel... levels) {
         visibleRootNode.removeAllChildren();
 
-        int itemCount = 0;
+        boolean hasProblems = false;
+        int[] totalCounts = new int[SeverityLevel.values().length];
         for (final PsiFile file : sortedFileNames(results)) {
             final TogglableTreeNode fileNode = new TogglableTreeNode();
             final List<Problem> problems = results.get(file);
 
-            int problemCount = 0;
+            int[] fileCounts = new int[SeverityLevel.values().length];
             if (problems != null) {
                 for (final Problem problem : problems) {
                     final ResultTreeNode problemObj = new ResultTreeNode(file, problem);
 
                     final TogglableTreeNode problemNode = new TogglableTreeNode(problemObj);
                     fileNode.add(problemNode);
-
-                    ++problemCount;
+                    fileCounts[problem.getSeverityLevel().ordinal()]++;
                 }
-            }
 
-            itemCount += problemCount;
+                for (int i = 0; i < totalCounts.length; i++) {
+                    totalCounts[i] += fileCounts[i];
+                }
 
-            if (problemCount > 0) {
-                final ResultTreeNode nodeObject = new ResultTreeNode(file.getName(), problemCount);
-                fileNode.setUserObject(nodeObject);
-
-                visibleRootNode.add(fileNode);
+                if (!problems.isEmpty()) {
+                    final ResultTreeNode nodeObject = new ResultTreeNode(file.getName(), fileCounts);
+                    fileNode.setUserObject(nodeObject);
+                    visibleRootNode.add(fileNode);
+                    hasProblems = true;
+                }
             }
         }
 
-        if (itemCount == 0) {
-            setRootMessage("plugin.results.scan-no-results");
+        if (hasProblems) {
+            setRootText(PylintBundle.message("plugin.results.scan-results",
+                    concatProblems(totalCounts),
+                    results.size()));
         } else {
-            setRootText(PylintBundle.message("plugin.results.scan-results", itemCount, results.size()));
+            setRootMessage("plugin.results.scan-no-results");
         }
 
         filter(false, levels);
@@ -218,5 +222,35 @@ public class ResultTreeModel extends DefaultTreeModel {
         final List<PsiFile> sortedFiles = new ArrayList<>(results.keySet());
         sortedFiles.sort(comparing(PsiFileSystemItem::getName));
         return sortedFiles;
+    }
+
+    static String concatProblems(int[] problemCounts) {
+        StringBuilder violations = new StringBuilder();
+        if (problemCounts[SeverityLevel.FATAL.ordinal()] > 0) {
+            violations.append(PylintBundle.message("plugin.results.scan-results.fatal",
+                    problemCounts[SeverityLevel.FATAL.ordinal()]));
+            violations.append(' ');
+        }
+        if (problemCounts[SeverityLevel.ERROR.ordinal()] > 0) {
+            violations.append(PylintBundle.message("plugin.results.scan-results.error",
+                    problemCounts[SeverityLevel.ERROR.ordinal()]));
+            violations.append(' ');
+        }
+        if (problemCounts[SeverityLevel.WARNING.ordinal()] > 0) {
+            violations.append(PylintBundle.message("plugin.results.scan-results.warning",
+                    problemCounts[SeverityLevel.WARNING.ordinal()]));
+            violations.append(' ');
+        }
+        if (problemCounts[SeverityLevel.CONVENTION.ordinal()] > 0) {
+            violations.append(PylintBundle.message("plugin.results.scan-results.convention",
+                    problemCounts[SeverityLevel.CONVENTION.ordinal()]));
+            violations.append(' ');
+        }
+        if (problemCounts[SeverityLevel.REFACTOR.ordinal()] > 0) {
+            violations.append(PylintBundle.message("plugin.results.scan-results.refactor",
+                    problemCounts[SeverityLevel.REFACTOR.ordinal()]));
+            violations.append(' ');
+        }
+        return new String(violations.deleteCharAt(violations.length() - 2));
     }
 }

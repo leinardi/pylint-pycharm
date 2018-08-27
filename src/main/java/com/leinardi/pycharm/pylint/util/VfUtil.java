@@ -21,7 +21,6 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.jetbrains.python.PythonFileType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -60,10 +59,6 @@ public class VfUtil {
         return list;
     }
 
-    public static boolean isPythonFileType(VirtualFile file) {
-        return file.getFileType() == PythonFileType.INSTANCE;
-    }
-
     public static List<VirtualFile> filterOnlyPythonProjectFiles(Project project, VirtualFile[] virtualFiles) {
         return filterOnlyPythonProjectFiles(project, Arrays.asList(virtualFiles));
     }
@@ -72,7 +67,7 @@ public class VfUtil {
         List<VirtualFile> list = new ArrayList<>();
         ProjectFileIndex projectFileIndex = ProjectFileIndex.SERVICE.getInstance(project);
         for (VirtualFile file : virtualFiles) {
-            if (isPythonFileType(file) && !projectFileIndex.isExcluded(file)) {
+            if (FileTypes.isPython(file.getFileType()) && !projectFileIndex.isExcluded(file)) {
                 list.add(file);
             }
         }

@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package com.leinardi.pycharm.pylint.plapi;
+package com.leinardi.pycharm.pylint.util;
 
-import com.squareup.moshi.Json;
+import com.intellij.openapi.fileTypes.FileType;
+import com.jetbrains.python.PythonFileType;
 
-/**
- * Pylint violation severity levels supported by this plugin.
- */
-public enum SeverityLevel {
-    @Json(name = "fatal")
-    FATAL,
-    @Json(name = "error")
-    ERROR,
-    @Json(name = "warning")
-    WARNING,
-    @Json(name = "convention")
-    CONVENTION,
-    @Json(name = "refactor")
-    REFACTOR
+public final class FileTypes {
+
+    private FileTypes() {
+    }
+
+    public static boolean isPython(FileType fileType) {
+        return fileType == PythonFileType.INSTANCE;
+    }
 }
-

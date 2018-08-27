@@ -17,12 +17,12 @@
 <idea-plugin>
     <id>com.leinardi.pycharm.pylint</id>
     <name>Pylint</name>
-    <version>0.2.0</version>
+    <version>0.5.0</version>
     <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Roberto Leinardi</vendor>
 
     <description><![CDATA[
 <p>
-    This plugin provides on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
+    This plugin provides both real-time and on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
 </p>
     ]]></description>
 
@@ -39,6 +39,7 @@
     <change-notes>
         <![CDATA[
 <ul>
+    <li>0.5.0: New: Added real-time scanning!</li>
     <li>0.2.0: New: UX based on Checkstyle-IDEA plugin.</li>
     <li>0.2.0: New: Plugin id and name changed (please remove manually the old plugin).</li>
     <li>0.1.0: Initial release.</li>
@@ -59,6 +60,18 @@
                     canCloseContents="false"
                     factoryClass="com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowFactory"
                     icon="/com/leinardi/pycharm/pylint/images/pylint.png"/>
+
+        <projectService serviceInterface="com.leinardi.pycharm.pylint.PylintConfigService"
+                        serviceImplementation="com.leinardi.pycharm.pylint.PylintConfigService"/>
+
+        <projectConfigurable instance="com.leinardi.pycharm.pylint.PylintConfigurable"/>
+
+        <localInspection implementationClass="com.leinardi.pycharm.pylint.PylintInspection"
+                         bundle="com.leinardi.pycharm.pylint.PylintBundle"
+                         key="inspection.display-name"
+                         groupKey="inspection.group"
+                         level="WARNING"
+                         enabledByDefault="true"/>
     </extensions>
 
     <actions>
@@ -96,11 +109,17 @@
                     description="Display warning results"
                     icon="/compiler/warning.png"/>
 
-            <action id="PylintDisplayInfoAction"
-                    class="com.leinardi.pycharm.pylint.actions.DisplayInfo"
-                    text="Display Information Results"
-                    description="Display information results"
-                    icon="/compiler/information.png"/>
+            <action id="PylintDisplayConventionAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayConvention"
+                    text="Display Convention"
+                    description="Display Convention results"
+                    icon="/nodes/class.png"/>
+
+            <action id="PylintDisplayRefactorAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayRefactor"
+                    text="Display Refactor"
+                    description="Display Refactor results"
+                    icon="/actions/forceRefresh.png"/>
         </group>
 
         <group id="PylintPluginActions" text="Pylint" popup="true">
@@ -155,6 +174,14 @@
                     description="Run Pylint on the current change list"
                     icon="/general/smallConfigurableVcs.png">
             </action>
+
+            <separator/>
+
+            <action id="PylintSettingsAction"
+                    class="com.leinardi.pycharm.pylint.actions.Settings"
+                    text="Open Pylint Settings"
+                    description="Open the Pylint settings window"
+                    icon="/general/gearPlain.png"/>
 
         </group>
     </actions>
