@@ -36,9 +36,6 @@ final class PsiFileValidator {
                 && hasDocument(psiFile)
                 && isInSource(psiFile, projectFileIndex)
                 && isValidFileType(psiFile);
-        //                && isScannableIfTest(psiFile, pluginConfig)
-        //                && modulesMatch(psiFile, module)
-        //                && !isGenerated(psiFile);
     }
 
     private static boolean hasDocument(final PsiFile psiFile) {
@@ -49,41 +46,8 @@ final class PsiFileValidator {
         return FileTypes.isPython(psiFile.getFileType());
     }
 
-    //    private static boolean isScannableIfTest(final PsiFile psiFile) {
-    //        return !isTestClass(psiFile);
-    //    }
-
-    //    private static boolean isGenerated(final PsiFile psiFile) {
-    //        return PythonProjectRootsUtil.isInGeneratedCode(psiFile.getVirtualFile(), psiFile.getProject());
-    //    }
-
     private static boolean isInSource(final PsiFile psiFile, final ProjectFileIndex projectFileIndex) {
         return !projectFileIndex.isExcluded(psiFile.getVirtualFile());
     }
-
-    //    private static boolean isTestClass(final PsiElement element) {
-    //        final VirtualFile elementFile = element.getContainingFile().getVirtualFile();
-    //        if (elementFile == null) {
-    //            return false;
-    //        }
-    //
-    //        final Module module = ModuleUtil.findModuleForPsiElement(element);
-    //        if (module == null) {
-    //            return false;
-    //        }
-    //
-    //        final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-    //        return moduleRootManager != null
-    //                && moduleRootManager.getFileIndex().isInTestSourceContent(elementFile);
-    //    }
-
-    //    private static boolean modulesMatch(final PsiFile psiFile,
-    //                                        final Optional<Module> module) {
-    //        if (!module.isPresent()) {
-    //            return true;
-    //        }
-    //        final Module elementModule = ModuleUtil.findModuleForPsiElement(psiFile);
-    //        return elementModule != null && elementModule.equals(module.get());
-    //    }
 
 }

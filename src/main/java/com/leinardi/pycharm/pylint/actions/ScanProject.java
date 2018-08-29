@@ -44,7 +44,6 @@ public class ScanProject extends BaseAction {
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
-            //            final ScanScope scope = pylintPlugin.configurationManager().getCurrent().getScanScope();
 
             final ToolWindow toolWindow = ToolWindowManager.getInstance(
                     project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
@@ -53,7 +52,7 @@ public class ScanProject extends BaseAction {
                     setProgressText(toolWindow, "plugin.status.in-progress.project");
                     Runnable scanAction = null;
                     //                                        if (scope == ScanScope.Everything) {
-                    scanAction = new ScanEverythingAction(project/*, getSelectedOverride(toolWindow)*/);
+                    scanAction = new ScanEverythingAction(project);
                     //                    } else {
                     //                    final ProjectRootManager projectRootManager = ProjectRootManager
                     // .getInstance(project);

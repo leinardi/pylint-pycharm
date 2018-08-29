@@ -46,13 +46,10 @@ public class ScanModifiedFiles extends BaseAction {
                 return;
             }
 
-            //            final ToolWindow toolWindow = ToolWindowManager.getInstance(project)
-            //                    .getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-
             final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
             project.getComponent(PylintPlugin.class).asyncScanFiles(
                     VfUtil.filterOnlyPythonProjectFiles(project, changeListManager.getAffectedFiles())
-                    /*, getSelectedOverride(toolWindow)*/);
+            );
         } catch (Throwable e) {
             LOG.warn("Modified files scan failed", e);
         }
@@ -62,7 +59,7 @@ public class ScanModifiedFiles extends BaseAction {
     public void update(final AnActionEvent event) {
         super.update(event);
 
-        Project project = null;
+        Project project;
         try {
             project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
             if (project == null) { // check if we're loading...

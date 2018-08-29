@@ -85,16 +85,10 @@ public class PylintRunner {
             generalCommandLine.addParameter(file);
         }
 
-        //        GeneralCommandLine generalCommandLine = new GeneralCommandLine("cat");
-        //        generalCommandLine.setCharset(Charset.forName("UTF-8"));
-        //        generalCommandLine.addParameter("pl.txt");
-
         generalCommandLine.setWorkDirectory(project.getBasePath());
-        //generalCommandLine.getCommandLineString();
         final Process process;
         try {
             process = generalCommandLine.createProcess();
-            //            process.waitFor();
             Moshi moshi = new Moshi.Builder().build();
             Type type = Types.newParameterizedType(List.class, Issue.class);
             JsonAdapter<List<Issue>> adapter = moshi.adapter(type);

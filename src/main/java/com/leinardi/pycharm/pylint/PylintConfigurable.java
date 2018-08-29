@@ -31,29 +31,17 @@ import javax.swing.JComponent;
 public class PylintConfigurable implements Configurable {
     private static final Logger LOG = Logger.getInstance(PylintConfigurable.class);
 
-    private final Project project;
-
     private final PylintConfigPanel configPanel;
     private final PylintConfigService pylintConfigService;
-    //    private final PylintProjectService pylintProjectService;
-    //    private final PluginConfigurationManager pluginConfigurationManager;
 
-    public PylintConfigurable(@NotNull final Project project/*,
-                              @NotNull final PylintProjectService pylintProjectService,
-                              @NotNull final PluginConfigurationManager pluginConfigurationManager*/) {
-        this(project, new PylintConfigPanel(project/*, pylintProjectService*/)/*,
-                pylintProjectService, pluginConfigurationManager*/);
+    public PylintConfigurable(@NotNull final Project project) {
+        this(project, new PylintConfigPanel(project));
     }
 
     PylintConfigurable(@NotNull final Project project,
-                       @NotNull final PylintConfigPanel configPanel/*,
-                       @NotNull final PylintProjectService pylintProjectService,
-                       @NotNull final PluginConfigurationManager pluginConfigurationManager*/) {
-        this.project = project;
+                       @NotNull final PylintConfigPanel configPanel) {
         this.configPanel = configPanel;
         pylintConfigService = PylintConfigService.getInstance(project);
-        //        this.pylintProjectService = pylintProjectService;
-        //        this.pluginConfigurationManager = pluginConfigurationManager;
     }
 
     @Override
@@ -74,12 +62,6 @@ public class PylintConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        //        final PluginConfiguration oldConfig = pluginConfigurationManager.getCurrent();
-        //        final PluginConfiguration newConfig = PluginConfigurationBuilder
-        //                .from(configPanel.getPluginConfiguration())
-        //                .withScanBeforeCheckin(oldConfig.isScanBeforeCheckin())
-        //                .build();
-        //
         boolean result = !configPanel.getPathToPylint().equals(pylintConfigService.getPathToPylint());
         if (LOG.isDebugEnabled()) {
             LOG.debug("Has config changed? " + result);
@@ -89,37 +71,9 @@ public class PylintConfigurable implements Configurable {
 
     @Override
     public void apply() {
-        //        final PluginConfiguration newConfig = PluginConfigurationBuilder.from(configPanel
-        // .getPluginConfiguration())
-        //                .withScanBeforeCheckin(pluginConfigurationManager.getCurrent().isScanBeforeCheckin())
-        //                .build();
-        //        pluginConfigurationManager.setCurrent(newConfig, true);
-        //
-        //        activateCurrentPylintVersion(newConfig.getPylintVersion(), newConfig.getThirdPartyClasspath());
-        //        if (!newConfig.isCopyLibs()) {
-        //            new TempDirProvider().deleteCopiedLibrariesDir(project);
-        //        }
         pylintConfigService.setPathToPylint(configPanel.getPathToPylint());
     }
 
-    //    private void activateCurrentPylintVersion(final String pylintVersion,
-    //                                                  final List<String> thirdPartyClasspath) {
-    //        // Invalidate cache *before* activating the new Pylint version
-    //        getCheckerFactoryCache().invalidate();
-    //
-    //        pylintProjectService.activatePylintVersion(pylintVersion, thirdPartyClasspath);
-    //    }
-    //
-    //    private CheckerFactoryCache getCheckerFactoryCache() {
-    //        return ServiceManager.getService(project, CheckerFactoryCache.class);
-    //    }
-    //
-    //    public void reset() {
-    //        final PluginConfiguration pluginConfig = pluginConfigurationManager.getCurrent();
-    //        configPanel.showPluginConfiguration(pluginConfig);
-    //
-    //        activateCurrentPylintVersion(pluginConfig.getPylintVersion(), pluginConfig.getThirdPartyClasspath());
-    //    }
     @Override
     public void disposeUIResources() {
         // do nothing

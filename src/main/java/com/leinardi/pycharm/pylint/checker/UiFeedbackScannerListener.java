@@ -54,22 +54,12 @@ public class UiFeedbackScannerListener implements ScannerListener {
     }
 
     @Override
-    public void scanCompletedSuccessfully(/*final ConfigurationLocationResult configurationLocationResult,*/
+    public void scanCompletedSuccessfully(
             final Map<PsiFile, List<Problem>> scanResults) {
         SwingUtilities.invokeLater(() -> {
             final PylintToolWindowPanel toolWindowPanel = toolWindowPanel();
             if (toolWindowPanel != null) {
-                //                switch (configurationLocationResult.status) {
-                //                    case NOT_PRESENT:
-                //                        toolWindowPanel.displayWarningResult("plugin.results.no-rules-file");
-                //                        break;
-                //                    case BLACKLISTED:
-                //                        toolWindowPanel.displayWarningResult("plugin.results.rules-blacklist",
-                //                                configurationLocationResult.location.blacklistedForSeconds());
-                //                        break;
-                //                    default:
                 toolWindowPanel.displayResults(scanResults);
-                //                }
             }
         });
     }

@@ -40,7 +40,6 @@ import java.nio.file.Paths;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class PylintConfigPanel {
-    private final PylintConfigService pylintConfigService;
     private JTextField pathToPylintTextField;
     private JPanel rootPanel;
     private JButton browseButton;
@@ -49,7 +48,7 @@ public class PylintConfigPanel {
 
     public PylintConfigPanel(Project project) {
         this.project = project;
-        pylintConfigService = PylintConfigService.getInstance(project);
+        PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
         browseButton.setAction(new BrowseAction());
         testButton.setAction(new TestAction());
         pathToPylintTextField.setText(pylintConfigService.getPathToPylint());

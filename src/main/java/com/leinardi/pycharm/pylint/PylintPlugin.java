@@ -16,11 +16,8 @@
 
 package com.leinardi.pycharm.pylint;
 
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -53,23 +50,18 @@ public final class PylintPlugin implements ProjectComponent {
      */
     public static final String ID_PLUGIN = "Pylint-PyCharm";
 
-//    public static final String ID_MODULE_PLUGIN = "Pylint-PyCharm-Module";
-
     private static final Logger LOG = com.intellij.openapi.diagnostic.Logger.getInstance(PylintPlugin.class);
 
     private final Set<Future<?>> checksInProgress = new HashSet<>();
     private final Project project;
-    //    private final PluginConfigurationManager configurationManager;
 
     /**
      * Construct a plug-in instance for the given project.
      *
      * @param project the current project.
      */
-    public PylintPlugin(@NotNull final Project project
-            /*, @NotNull final PluginConfigurationManager configurationManager*/) {
+    public PylintPlugin(@NotNull final Project project) {
         this.project = project;
-        //        this.configurationManager = configurationManager;
 
         LOG.info("Pylint Plugin loaded with project base dir: \"" + getProjectPath() + "\"");
 
@@ -89,15 +81,6 @@ public final class PylintPlugin implements ProjectComponent {
         return new File(baseDir.getPath());
     }
 
-    //    /**
-    //     * Get the plugin configuration.
-    //     *
-    //     * @return the plug-in configuration.
-    //     */
-    //    public PluginConfigurationManager configurationManager() {
-    //        return configurationManager;
-    //    }
-
     /**
      * Is a scan in progress?
      * <p>
@@ -114,40 +97,12 @@ public final class PylintPlugin implements ProjectComponent {
     @Override
     public void projectOpened() {
         LOG.debug("Project opened.");
-        //        notifyUserIfPluginUpdated();
-    }
-
-    //    private void notifyUserIfPluginUpdated() {
-    //        if (!Objects.equals(currentPluginVersion(), lastActivePluginVersion())) {
-    //            Notifications.showInfo(project, message("plugin.update", currentPluginVersion()));
-    //            configurationManager.setCurrent(PluginConfigurationBuilder.from(configurationManager.getCurrent())
-    //                    .withLastActivePluginVersion(currentPluginVersion())
-    //                    .build(), false);
-    //        }
-    //    }
-
-    //    private String lastActivePluginVersion() {
-    //        return configurationManager.getCurrent().getLastActivePluginVersion();
-    //    }
-
-    public static String currentPluginVersion() {
-        final IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId(ID_PLUGIN));
-        if (plugin != null) {
-            return plugin.getVersion();
-        }
-        return "unknown";
     }
 
     @Override
     public void projectClosed() {
         LOG.debug("Project closed; invalidating checkers.");
-
-        //        invalidateCheckerCache();
     }
-
-    //    private void invalidateCheckerCache() {
-    //        ServiceManager.getService(project, CheckerFactoryCache.class).invalidate();
-    //    }
 
     @Override
     @NotNull
@@ -194,8 +149,7 @@ public final class PylintPlugin implements ProjectComponent {
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
-    public void asyncScanFiles(final List<VirtualFile> files/*, final ConfigurationLocation
-            overrideConfigLocation*/) {
+    public void asyncScanFiles(final List<VirtualFile> files) {
         LOG.info("Scanning current file(s).");
 
         if (files == null || files.isEmpty()) {
@@ -203,7 +157,7 @@ public final class PylintPlugin implements ProjectComponent {
             return;
         }
 
-        final ScanFiles checkFiles = new ScanFiles(this, files/*, overrideConfigLocation*/);
+        final ScanFiles checkFiles = new ScanFiles(this, files);
         checkFiles.addListener(new UiFeedbackScannerListener(this));
         runAsyncCheck(checkFiles);
     }
@@ -214,7 +168,7 @@ public final class PylintPlugin implements ProjectComponent {
         }
 
         try {
-            return whenFinished(runAsyncCheck(new ScanFiles(this, files/*, null*/))).get();
+            return whenFinished(runAsyncCheck(new ScanFiles(this, files))).get();
         } catch (final Throwable e) {
             LOG.warn("ERROR scanning files", e);
             return Collections.emptyMap();
@@ -227,27 +181,6 @@ public final class PylintPlugin implements ProjectComponent {
         checker.addListener(new ScanCompletionTracker(checkFilesFuture));
         return checkFilesFuture;
     }
-
-    //    public ConfigurationLocation getConfigurationLocation(@Nullable final Module module, @Nullable final
-    //    ConfigurationLocation override) {
-    //        if (override != null) {
-    //            return override;
-    //        }
-    //
-    //        if (module != null) {
-    //            final PylintModuleConfiguration moduleConfiguration = ModuleServiceManager.getService(module,
-    //                    PylintModuleConfiguration.class);
-    //            if (moduleConfiguration == null) {
-    //                throw new IllegalStateException("Couldn't get pylint module configuration");
-    //            }
-    //
-    //            if (moduleConfiguration.isExcluded()) {
-    //                return null;
-    //            }
-    //            return moduleConfiguration.getActiveConfiguration();
-    //        }
-    //        return configurationManager().getCurrent().getActiveLocation();
-    //    }
 
     private class ScanCompletionTracker implements ScannerListener {
 

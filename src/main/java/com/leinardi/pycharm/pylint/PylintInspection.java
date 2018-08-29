@@ -20,8 +20,6 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -72,14 +70,8 @@ public class PylintInspection extends LocalInspectionTool {
     public ProblemDescriptor[] checkFile(@NotNull final PsiFile psiFile,
                                          @NotNull final InspectionManager manager,
                                          final boolean isOnTheFly) {
-        //        final Module module = moduleOf(psiFile);
-        return asProblemDescriptors(asyncResultOf(() -> inspectFile(psiFile, /*module, */manager), NO_PROBLEMS_FOUND),
+        return asProblemDescriptors(asyncResultOf(() -> inspectFile(psiFile, manager), NO_PROBLEMS_FOUND),
                 manager);
-    }
-
-    @Nullable
-    private Module moduleOf(@NotNull final PsiFile psiFile) {
-        return ModuleUtil.findModuleForPsiElement(psiFile);
     }
 
     @Nullable
@@ -90,15 +82,9 @@ public class PylintInspection extends LocalInspectionTool {
 
         final PylintPlugin plugin = plugin(manager.getProject());
 
-        //        ConfigurationLocation configurationLocation = null;
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
-            //            configurationLocation = plugin.getConfigurationLocation(module, null);
-            //            if (configurationLocation == null || configurationLocation.isBlacklisted()) {
-            //                return NO_PROBLEMS_FOUND;
-            //            }
-
-            scannableFiles.addAll(ScannableFile.createAndValidate(singletonList(psiFile), plugin/*, module*/));
+            scannableFiles.addAll(ScannableFile.createAndValidate(singletonList(psiFile), plugin));
             ScanFiles scanFiles = new ScanFiles(plugin, Collections.singletonList(psiFile.getVirtualFile()));
             Map<PsiFile, List<Problem>> map = scanFiles.call();
             if (map.isEmpty()) {
@@ -115,7 +101,7 @@ public class PylintInspection extends LocalInspectionTool {
             return NO_PROBLEMS_FOUND;
 
         } catch (Throwable e) {
-            handlePluginException(e, psiFile, /*plugin, configurationLocation,*/ manager.getProject());
+            handlePluginException(e, psiFile, manager.getProject());
             return NO_PROBLEMS_FOUND;
 
         } finally {
@@ -123,42 +109,17 @@ public class PylintInspection extends LocalInspectionTool {
         }
     }
 
-    //    private List<Problem> dropIgnoredProblems(final List<Problem> problems) {
-    //        return problems.stream()
-    //                .filter(problem -> problem.severityLevel() != SeverityLevel.Ignore)
-    //                .collect(toList());
-    //    }
-
     private void handlePluginException(final Throwable e,
                                        final @NotNull PsiFile psiFile,
-                                       //                                       final PylintPlugin plugin,
-                                       //                                       final ConfigurationLocation
-                                       // configurationLocation,
                                        final @NotNull Project project) {
-        //        if (e.getCause() != null && e.getCause() instanceof FileNotFoundException) {
-        //            disableActiveConfiguration(plugin, project);
-        //        } else
         if (e.getCause() != null && e.getCause() instanceof IOException) {
             showWarning(project, message("pylint.file-io-failed"));
-            //            blacklist(configurationLocation);
 
         } else {
             LOG.warn("Pylint threw an exception when scanning: " + psiFile.getName(), e);
             showException(project, e);
-            //            blacklist(configurationLocation);
         }
     }
-
-    //    private void disableActiveConfiguration(final PylintPlugin plugin, final Project project) {
-    //        plugin.configurationManager().disableActiveConfiguration();
-    //        showWarning(project, message("pylint.configuration-disabled.file-not-found"));
-    //    }
-
-    //    private void blacklist(final ConfigurationLocation configurationLocation) {
-    //        if (configurationLocation != null) {
-    //            configurationLocation.blacklist();
-    //        }
-    //    }
 
     @NotNull
     private ProblemDescriptor[] asProblemDescriptors(final List<Problem> results, final InspectionManager manager) {
@@ -168,9 +129,4 @@ public class PylintInspection extends LocalInspectionTool {
                         .toArray(ProblemDescriptor[]::new))
                 .orElseGet(() -> ProblemDescriptor.EMPTY_ARRAY);
     }
-
-    //    private CheckerFactory checkerFactory(final Project project) {
-    //        return ServiceManager.getService(project, CheckerFactory.class);
-    //    }
-
 }

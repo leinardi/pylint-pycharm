@@ -115,7 +115,7 @@ public class ResultTreeModel extends DefaultTreeModel {
                 final ResultTreeNode result = (ResultTreeNode) problemNode.getUserObject();
 
                 final boolean currentVisible = problemNode.isVisible();
-                final boolean desiredVisible = levels != null && contains(levels, result.getSeverity());
+                final boolean desiredVisible = contains(levels, result.getSeverity());
                 if (currentVisible != desiredVisible) {
                     problemNode.setVisible(desiredVisible);
 
@@ -154,15 +154,6 @@ public class ResultTreeModel extends DefaultTreeModel {
         }
         return false;
     }
-
-    //    /**
-    //     * Set the displayed model.
-    //     *
-    //     * @param results the model.
-    //     */
-    //    public void setModel(final Map<PsiFile, List<Problem>> results) {
-    //        setModel(results, SeverityLevel.ERROR, SeverityLevel.WARNING, SeverityLevel.INFO);
-    //    }
 
     /**
      * Set the displayed model.

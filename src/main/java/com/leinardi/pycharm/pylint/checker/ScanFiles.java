@@ -32,7 +32,6 @@ import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import com.leinardi.pycharm.pylint.util.Notifications;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,19 +48,14 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
     private static final Logger LOG = Logger.getInstance(ScanFiles.class);
 
     private final List<PsiFile> files;
-    //    private final Map<Module, Set<PsiFile>> moduleToFiles;
     private final Set<ScannerListener> listeners = new HashSet<>();
     private final PylintPlugin plugin;
-    private final int tabWidth = 4;
 
     public ScanFiles(@NotNull final PylintPlugin pylintPlugin,
-                     @NotNull final List<VirtualFile> virtualFiles/*,
-                     @Nullable final ConfigurationLocation overrideConfigLocation*/) {
+                     @NotNull final List<VirtualFile> virtualFiles) {
         this.plugin = pylintPlugin;
-        //        this.overrideConfigLocation = overrideConfigLocation;
 
         files = findAllFilesFor(virtualFiles);
-        //        moduleToFiles = mapsModulesToFiles();
     }
 
     private List<PsiFile> findAllFilesFor(@NotNull final List<VirtualFile> virtualFiles) {
@@ -73,26 +67,14 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return childFiles;
     }
 
-    //    private Map<Module, Set<PsiFile>> mapsModulesToFiles() {
-    //        final Map<Module, Set<PsiFile>> modulesToFiles = new HashMap<>();
-    //        for (final PsiFile file : files) {
-    //            final Module module = ModuleUtil.findModuleForPsiElement(file);
-    //            Set<PsiFile> filesForModule = modulesToFiles.computeIfAbsent(module, key -> new HashSet<>());
-    //            filesForModule.add(file);
-    //        }
-    //        return modulesToFiles;
-    //    }
-
     @Override
     public final Map<PsiFile, List<Problem>> call() {
         try {
             fireCheckStarting(files);
-            //            final Pair<ConfigurationLocationResult, Map<PsiFile, List<Problem>>> scanResult =
-            //                    processFilesForModuleInfoAndScan();
             return scanCompletedSuccessfully(checkFiles(new HashSet<>(files)));
         } catch (final InterruptedIOException e) {
             LOG.debug("Scan cancelled by PyCharm", e);
-            return scanCompletedSuccessfully(/*resultOf(PRESENT),*/ emptyMap());
+            return scanCompletedSuccessfully(emptyMap());
         } catch (final PylintPluginException e) {
             LOG.warn("An error occurred while scanning a file.", e);
             return scanFailedWithError(e);
@@ -110,13 +92,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return filePathsToElements;
     }
 
-    private String withTrailingSeparator(final String path) {
-        if (path != null && !path.endsWith(File.separator)) {
-            return path + File.separator;
-        }
-        return path;
-    }
-
     private Map<PsiFile, List<Problem>> checkFiles(final Set<PsiFile> filesToScan) throws InterruptedIOException {
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
@@ -132,21 +107,19 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         Map<String, PsiFile> fileNamesToPsiFiles = mapFilesToElements(filesToScan);
         List<Issue> errors = PylintRunner.scan(plugin.getProject(), fileNamesToPsiFiles.keySet());
         String baseDir = plugin.getProject().getBasePath();
+        int tabWidth = 4;
         final ProcessResultsThread findThread = new ProcessResultsThread(false, tabWidth, baseDir,
                 errors, fileNamesToPsiFiles);
 
         final Application application = ApplicationManager.getApplication();
-        //        if (application != null) {  // can be null in unit tests
         // TODO Make sure that this does not block ... it seems that we are not starting a new thread.
-        //      Sometimes, the editor is non-responsive because Checkstyle is still processing results.
-        //      Problem: OpScan currently expects the ready-made list of problems synchronously.
+        //      Sometimes, the editor is non-responsive because Pylint is still processing results.
         if (application.isDispatchThread()) {
             findThread.run();
         } else {
             application.runReadAction(findThread);
         }
         return findThread.getProblems();
-        //        }
     }
 
     private Map<PsiFile, List<Problem>> scanFailedWithError(final PylintPluginException e) {
@@ -156,10 +129,8 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return emptyMap();
     }
 
-    private Map<PsiFile, List<Problem>> scanCompletedSuccessfully(/*final ConfigurationLocationResult
-    configurationLocationResult,*/
-            final Map<PsiFile, List<Problem>> filesToProblems) {
-        fireScanCompletedSuccessfully(/*configurationLocationResult, */filesToProblems);
+    private Map<PsiFile, List<Problem>> scanCompletedSuccessfully(final Map<PsiFile, List<Problem>> filesToProblems) {
+        fireScanCompletedSuccessfully(filesToProblems);
         return filesToProblems;
     }
 
@@ -171,9 +142,9 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         listeners.forEach(listener -> listener.scanStarting(filesToScan));
     }
 
-    private void fireScanCompletedSuccessfully(/*final ConfigurationLocationResult configLocationResult,*/
+    private void fireScanCompletedSuccessfully(
             final Map<PsiFile, List<Problem>> fileResults) {
-        listeners.forEach(listener -> listener.scanCompletedSuccessfully(/*configLocationResult, */fileResults));
+        listeners.forEach(listener -> listener.scanCompletedSuccessfully(fileResults));
     }
 
     private void fireScanFailedWithError(final PylintPluginException error) {
@@ -193,79 +164,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         });
         return allChildFiles;
     }
-
-    //    private Pair<ConfigurationLocationResult, Map<PsiFile, List<Problem>>> processFilesForModuleInfoAndScan() {
-    //        final Map<PsiFile, List<Problem>> fileResults = new HashMap<>();
-    //
-    //        for (final Module module : moduleToFiles.keySet()) {
-    //            if (module == null) {
-    //                continue;
-    //            }
-    //
-    //            final ConfigurationLocationResult locationResult = configurationLocation(overrideConfigLocation,
-    // module);
-    //            if (locationResult.status != PRESENT) {
-    //                return pair(locationResult, emptyMap());
-    //            }
-    //
-    //            final Set<PsiFile> filesForModule = moduleToFiles.get(module);
-    //            if (filesForModule.isEmpty()) {
-    //                continue;
-    //            }
-    //
-    //            fileResults.putAll(filesWithProblems(filesForModule,
-    //                    checkFiles(module, filesForModule, locationResult.location)));
-    //            fireFilesScanned(filesForModule.size());
-    //        }
-    //
-    //        return pair(resultOf(PRESENT), fileResults);
-    //    }
-
-    //    @NotNull
-    //    private Map<PsiFile, List<Problem>> filesWithProblems(final Set<PsiFile> filesForModule,
-    //                                                          final Map<PsiFile, List<Problem>> moduleFileResults) {
-    //        final Map<PsiFile, List<Problem>> moduleResults = new HashMap<>();
-    //        for (final PsiFile psiFile : filesForModule) {
-    //            final List<Problem> resultsForFile = moduleFileResults.get(psiFile);
-    //            if (resultsForFile != null && !resultsForFile.isEmpty()) {
-    //                moduleResults.put(psiFile, new ArrayList<>(resultsForFile));
-    //            }
-    //        }
-    //        return moduleResults;
-    //    }
-
-    //    @NotNull
-    //    private ConfigurationLocationResult configurationLocation(final ConfigurationLocation override,
-    //                                                              final Module module) {
-    //        final ConfigurationLocation location = plugin.getConfigurationLocation(module, override);
-    //        if (location == null) {
-    //            return resultOf(NOT_PRESENT);
-    //        }
-    //        if (location.isBlacklisted()) {
-    //            return resultOf(location, BLACKLISTED);
-    //        }
-    //        return resultOf(location, PRESENT);
-    //    }
-    //
-    //    private Map<PsiFile, List<Problem>> checkFiles(final Module module,
-    //                                                   final Set<PsiFile> filesToScan,
-    //                                                   final ConfigurationLocation configurationLocation) {
-    //        final List<ScannableFile> scannableFiles = new ArrayList<>();
-    //        try {
-    //            scannableFiles.addAll(ScannableFile.createAndValidate(filesToScan, plugin, module));
-    //
-    //            return checkerFactory(module.getProject()).checker(module, configurationLocation)
-    //                    .map(checker -> checker.scan(scannableFiles,
-    //                            plugin.configurationManager().getCurrent().isSuppressErrors()))
-    //                    .orElseThrow(() -> new PylintPluginException("Could not create checker"));
-    //        } finally {
-    //            scannableFiles.forEach(ScannableFile::deleteIfRequired);
-    //        }
-    //    }
-
-    //    private CheckerFactory checkerFactory(final Project project) {
-    //        return ServiceManager.getService(project, CheckerFactory.class);
-    //    }
 
     private static class FindChildFiles extends VirtualFileVisitor {
 

@@ -32,7 +32,6 @@ class CreateScannableFileAction implements Runnable {
     private IOException failure;
 
     private final PsiFile psiFile;
-    //    private final Module module;
 
     /**
      * The created temporary file.
@@ -44,10 +43,8 @@ class CreateScannableFileAction implements Runnable {
      *
      * @param psiFile the file to read.
      */
-    CreateScannableFileAction(@NotNull final PsiFile psiFile/*,
-                              @Nullable final Module module*/) {
+    CreateScannableFileAction(@NotNull final PsiFile psiFile) {
         this.psiFile = psiFile;
-        //        this.module = module;
     }
 
     /**
@@ -71,7 +68,7 @@ class CreateScannableFileAction implements Runnable {
     @Override
     public void run() {
         try {
-            file = new ScannableFile(psiFile/*, module*/);
+            file = new ScannableFile(psiFile);
 
         } catch (IOException e) {
             failure = e;
