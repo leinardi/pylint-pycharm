@@ -76,7 +76,6 @@ public class PylintInspection extends LocalInspectionTool {
 
     @Nullable
     public List<Problem> inspectFile(@NotNull final PsiFile psiFile,
-                                     //                                     @Nullable final Module module,
                                      @NotNull final InspectionManager manager) {
         LOG.debug("Inspection has been invoked.");
 
@@ -85,6 +84,9 @@ public class PylintInspection extends LocalInspectionTool {
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
             scannableFiles.addAll(ScannableFile.createAndValidate(singletonList(psiFile), plugin));
+            if (scannableFiles.isEmpty()) {
+                return NO_PROBLEMS_FOUND;
+            }
             ScanFiles scanFiles = new ScanFiles(plugin, Collections.singletonList(psiFile.getVirtualFile()));
             Map<PsiFile, List<Problem>> map = scanFiles.call();
             if (map.isEmpty()) {
@@ -127,6 +129,6 @@ public class PylintInspection extends LocalInspectionTool {
                 .map(problems -> problems.stream()
                         .map(problem -> problem.toProblemDescriptor(manager))
                         .toArray(ProblemDescriptor[]::new))
-                .orElseGet(() -> ProblemDescriptor.EMPTY_ARRAY);
+                .orElse(ProblemDescriptor.EMPTY_ARRAY);
     }
 }
