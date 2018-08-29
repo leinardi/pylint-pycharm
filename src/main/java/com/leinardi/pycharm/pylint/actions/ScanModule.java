@@ -69,22 +69,8 @@ public class ScanModule extends BaseAction {
 
                     List<VirtualFile> moduleFiles = VfUtil.filterOnlyPythonProjectFiles(
                             project, VfUtil.flattenFiles(new VirtualFile[]{selectedFiles[0].getParent()}));
-                    Runnable scanAction = null;
-                    //                    if (scope == ScanScope.Everything) {
-                    scanAction = new ScanSourceRootsAction(project, moduleFiles.toArray(new VirtualFile[0])/*,
-                    getSelectedOverride(toolWindow)*/);
-                    //                    } else {
-                    //                        final VirtualFile[] moduleSourceRoots =
-                    //                                ModuleRootManager.getInstance(module).getSourceRoots(scope
-                    // .includeTestClasses());
-                    //                        if (moduleSourceRoots.length > 0) {
-                    //                            scanAction = new ScanSourceRootsAction(project, moduleSourceRoots,
-                    //                                    getSelectedOverride(toolWindow));
-                    //                        }
-                    //                    }
-                    //                    if (scanAction != null) {
+                    Runnable scanAction = new ScanSourceRootsAction(project, moduleFiles.toArray(new VirtualFile[0]));
                     ApplicationManager.getApplication().runReadAction(scanAction);
-                    //                    }
                 } catch (Throwable e) {
                     PylintPlugin.processErrorAndLog("Current Module scan", e);
                 }
@@ -125,15 +111,10 @@ public class ScanModule extends BaseAction {
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
-            //            final ScanScope scope = pylintPlugin.configurationManager().getCurrent().getScanScope();
 
-            VirtualFile[] moduleFiles = null;
+            VirtualFile[] moduleFiles;
             final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-            //            if (scope == ScanScope.Everything) {
             moduleFiles = moduleRootManager.getContentRoots();
-            //            } else {
-            //                moduleFiles = moduleRootManager.getSourceRoots(scope.includeTestClasses());
-            //            }
 
             // disable if no files are selected or scan in progress
             if (containsAtLeastOneFile(moduleFiles)) {

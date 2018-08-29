@@ -25,10 +25,7 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
-import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 import com.leinardi.pycharm.pylint.util.VfUtil;
 
 import java.util.ArrayList;
@@ -46,21 +43,17 @@ public class ScanCurrentChangeList extends BaseAction {
 
     @Override
     public final void actionPerformed(final AnActionEvent event) {
-        Project project = null;
+        Project project;
         try {
             project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
             if (project == null) {
                 return;
             }
 
-            final ToolWindow toolWindow = ToolWindowManager.getInstance(project)
-                    .getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-
             final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
             project.getComponent(PylintPlugin.class)
                     .asyncScanFiles(VfUtil.filterOnlyPythonProjectFiles(project,
-                            filesFor(changeListManager.getDefaultChangeList()))
-                            /*, getSelectedOverride(toolWindow)*/);
+                            filesFor(changeListManager.getDefaultChangeList())));
         } catch (Throwable e) {
             LOG.warn("Modified files scan failed", e);
         }
@@ -85,7 +78,7 @@ public class ScanCurrentChangeList extends BaseAction {
     public void update(final AnActionEvent event) {
         super.update(event);
 
-        Project project = null;
+        Project project;
         try {
             project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
             if (project == null) { // check if we're loading...
@@ -100,7 +93,7 @@ public class ScanCurrentChangeList extends BaseAction {
             final Presentation presentation = event.getPresentation();
 
             final LocalChangeList changeList = ChangeListManager.getInstance(project).getDefaultChangeList();
-            if (changeList == null || changeList.getChanges() == null || changeList.getChanges().size() == 0) {
+            if (changeList.getChanges() == null || changeList.getChanges().size() == 0) {
                 presentation.setEnabled(false);
             } else {
                 presentation.setEnabled(!pylintPlugin.isScanInProgress());

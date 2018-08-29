@@ -94,20 +94,11 @@ public abstract class BaseAction extends AnAction {
         }
     }
 
-    //    protected ConfigurationLocation getSelectedOverride(final ToolWindow toolWindow) {
-    //        final Content content = toolWindow.getContentManager().getContent(0);
-    //        // the content instance will be a JLabel while the component initialises
-    //        if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
-    //            return ((PylintToolWindowPanel) content.getComponent()).getSelectedOverride();
-    //        }
-    //        return null;
-    //    }
-
     protected Optional<Project> project(@NotNull final AnActionEvent event) {
         return ofNullable(PROJECT.getData(event.getDataContext()));
     }
 
-    protected boolean containsAtLeastOneFile(@NotNull final VirtualFile... files) {
+    boolean containsAtLeastOneFile(@NotNull final VirtualFile... files) {
         boolean result = false;
         for (VirtualFile file : files) {
             if ((file.isDirectory() && containsAtLeastOneFile(file.getChildren())) || (!file.isDirectory() && file

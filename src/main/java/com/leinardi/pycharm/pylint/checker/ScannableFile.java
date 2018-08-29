@@ -74,12 +74,12 @@ public class ScannableFile {
      * @param psiFile the psiFile to create the file from.
      * @throws IOException if file creation is required and fails.
      */
-    public ScannableFile(@NotNull final PsiFile psiFile/*, @Nullable final Module module*/) throws IOException {
+    public ScannableFile(@NotNull final PsiFile psiFile) throws IOException {
         this.psiFile = psiFile;
 
         if (!existsOnFilesystem(psiFile) || documentIsModifiedAndUnsaved(psiFile)) {
             baseTempDir = prepareBaseTmpDirFor(psiFile);
-            realFile = createTemporaryFileFor(psiFile, /*module,*/ baseTempDir);
+            realFile = createTemporaryFileFor(psiFile, baseTempDir);
         } else {
             baseTempDir = null;
             realFile = new File(pathOf(psiFile));
@@ -94,7 +94,7 @@ public class ScannableFile {
         try {
             return psiFiles.stream()
                     .filter(psiFile -> PsiFileValidator.isScannable(psiFile, plugin.getProject()))
-                    .map(psiFile -> ScannableFile.create(psiFile/*, module*/))
+                    .map(psiFile -> ScannableFile.create(psiFile))
                     .filter(Objects::nonNull).collect(Collectors.toList());
         } finally {
             readAccessToken.finish();
@@ -102,9 +102,9 @@ public class ScannableFile {
     }
 
     @Nullable
-    private static ScannableFile create(@NotNull final PsiFile psiFile/*, @Nullable final Module module*/) {
+    private static ScannableFile create(@NotNull final PsiFile psiFile) {
         try {
-            final CreateScannableFileAction fileAction = new CreateScannableFileAction(psiFile/*, module*/);
+            final CreateScannableFileAction fileAction = new CreateScannableFileAction(psiFile);
             ApplicationManager.getApplication().runReadAction(fileAction);
 
             //noinspection ThrowableResultOfMethodCallIgnored
@@ -129,7 +129,7 @@ public class ScannableFile {
     private File createTemporaryFileFor(@NotNull final PsiFile file,
                                         //                                        @Nullable final Module module,
                                         @NotNull final File tempDir) throws IOException {
-        final File temporaryFile = new File(parentDirFor(file/*, module*/, tempDir), file.getName());
+        final File temporaryFile = new File(parentDirFor(file, tempDir), file.getName());
         temporaryFile.deleteOnExit();
 
         writeContentsToFile(file, temporaryFile);

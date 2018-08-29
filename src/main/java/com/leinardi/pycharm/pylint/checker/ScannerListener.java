@@ -28,7 +28,7 @@ public interface ScannerListener {
 
     void filesScanned(int count);
 
-    void scanCompletedSuccessfully(/*ConfigurationLocationResult configurationLocationResult,*/
+    void scanCompletedSuccessfully(
             Map<PsiFile, List<Problem>> scanResults);
 
     void scanFailedWithError(PylintPluginException error);

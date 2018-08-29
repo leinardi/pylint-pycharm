@@ -30,7 +30,7 @@ import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 import com.leinardi.pycharm.pylint.util.FileTypes;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Action to execute a Pylint scan on the current editor file.
@@ -50,7 +50,6 @@ public class ScanCurrentFile extends BaseAction {
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
-            //            final ScanScope scope = pylintPlugin.configurationManager().getCurrent().getScanScope();
 
             final ToolWindow toolWindow = ToolWindowManager.getInstance(
                     project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
@@ -58,10 +57,10 @@ public class ScanCurrentFile extends BaseAction {
                 try {
                     setProgressText(toolWindow, "plugin.status.in-progress.current");
 
-                    final VirtualFile selectedFile = getSelectedFile(project/*, scope*/);
+                    final VirtualFile selectedFile = getSelectedFile(project);
                     if (selectedFile != null) {
                         project.getComponent(PylintPlugin.class).asyncScanFiles(
-                                Arrays.asList(selectedFile)/*, getSelectedOverride(toolWindow)*/);
+                                Collections.singletonList(selectedFile));
                     }
 
                 } catch (Throwable e) {
@@ -74,7 +73,7 @@ public class ScanCurrentFile extends BaseAction {
         }
     }
 
-    private VirtualFile getSelectedFile(final Project project /*, final ScanScope scope*/) {
+    private VirtualFile getSelectedFile(final Project project) {
 
         VirtualFile selectedFile = null;
 
@@ -116,9 +115,7 @@ public class ScanCurrentFile extends BaseAction {
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
-            //            final ScanScope scope = pylintPlugin.configurationManager().getCurrent().getScanScope();
-            //
-            final VirtualFile selectedFile = getSelectedFile(project/*, scope*/);
+            final VirtualFile selectedFile = getSelectedFile(project);
 
             // disable if no file is selected or scan in progress
             final Presentation presentation = event.getPresentation();

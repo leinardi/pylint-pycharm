@@ -30,23 +30,20 @@ class ScanEverythingAction implements Runnable {
 
     private final Project project;
     private final Module module;
-    //    private final ConfigurationLocation selectedOverride;
 
-    ScanEverythingAction(@NotNull final Project project/*, final ConfigurationLocation selectedOverride*/) {
+    ScanEverythingAction(@NotNull final Project project) {
         this.project = project;
         this.module = null;
-        //        this.selectedOverride = selectedOverride;
     }
 
-    ScanEverythingAction(@NotNull final Module module/*, final ConfigurationLocation selectedOverride*/) {
+    ScanEverythingAction(@NotNull final Module module) {
         this.project = module.getProject();
         this.module = module;
-        //        this.selectedOverride = selectedOverride;
     }
 
     @Override
     public void run() {
-        List<VirtualFile> filesToScan = null;
+        List<VirtualFile> filesToScan;
         if (module != null) {
             // all non-excluded files of a module
             final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
@@ -57,6 +54,6 @@ class ScanEverythingAction implements Runnable {
         }
         filesToScan = VfUtil.filterOnlyPythonProjectFiles(project, filesToScan);
 
-        project.getComponent(PylintPlugin.class).asyncScanFiles(filesToScan/*, selectedOverride*/);
+        project.getComponent(PylintPlugin.class).asyncScanFiles(filesToScan);
     }
 }

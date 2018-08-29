@@ -72,7 +72,7 @@ public class ResultTreeRenderer extends JLabel
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         if (node != null) {
             final Object userObject = node.getUserObject();
-            if (userObject != null && userObject instanceof ResultTreeNode) {
+            if (userObject instanceof ResultTreeNode) {
                 final ResultTreeNode treeNode
                         = (ResultTreeNode) userObject;
 

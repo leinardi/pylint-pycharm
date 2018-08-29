@@ -98,9 +98,6 @@ public class Problem {
     }
 
     private ProblemHighlightType problemHighlightType() {
-//        if (!suppressErrors) {
-        //            return ProblemHighlightType.ERROR;
-        //        }
         return ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
     }
 

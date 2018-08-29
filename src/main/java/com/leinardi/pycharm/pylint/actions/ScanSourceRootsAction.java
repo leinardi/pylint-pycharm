@@ -25,21 +25,18 @@ import org.jetbrains.annotations.NotNull;
 class ScanSourceRootsAction implements Runnable {
     private final Project project;
     private final VirtualFile[] sourceRoots;
-    //    private final ConfigurationLocation selectedOverride;
 
     ScanSourceRootsAction(@NotNull final Project project,
-                          @NotNull final VirtualFile[] sourceRoots/*,
-                          final ConfigurationLocation selectedOverride*/) {
+                          @NotNull final VirtualFile[] sourceRoots) {
         this.project = project;
         this.sourceRoots = sourceRoots;
-        //        this.selectedOverride = selectedOverride;
     }
 
     @Override
     public void run() {
         project.getComponent(PylintPlugin.class)
                 .asyncScanFiles(VfUtil.filterOnlyPythonProjectFiles(project,
-                        VfUtil.flattenFiles(sourceRoots)/*, selectedOverride*/));
+                        VfUtil.flattenFiles(sourceRoots)));
     }
 
 }

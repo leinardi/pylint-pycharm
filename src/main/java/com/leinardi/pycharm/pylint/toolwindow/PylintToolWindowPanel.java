@@ -34,6 +34,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.JBUI;
 import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.checker.Problem;
@@ -49,7 +50,6 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -136,8 +136,6 @@ public class PylintToolWindowPanel extends JPanel {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }
 
-        //        pylintPlugin.configurationManager().addConfigurationListener(this);
-
         final ActionGroup mainActionGroup = (ActionGroup)
                 ActionManager.getInstance().getAction(MAIN_ACTION_GROUP);
         final ActionToolbar mainToolbar = ActionManager.getInstance().createActionToolbar(
@@ -152,7 +150,7 @@ public class PylintToolWindowPanel extends JPanel {
         toolBarBox.add(mainToolbar.getComponent());
         toolBarBox.add(treeToolbar.getComponent());
 
-        setBorder(new EmptyBorder(1, 1, 1, 1));
+        setBorder(JBUI.Borders.empty(1));
         add(toolBarBox, BorderLayout.WEST);
         add(createToolPanel(), BorderLayout.CENTER);
 
@@ -160,14 +158,6 @@ public class PylintToolWindowPanel extends JPanel {
 
         mainToolbar.getComponent().setVisible(true);
     }
-
-    //    public ConfigurationLocation getSelectedOverride() {
-    //        final Object selectedItem = configurationOverrideModel.getSelectedItem();
-    //        if (DEFAULT_OVERRIDE.equals(selectedItem)) {
-    //            return null;
-    //        }
-    //        return (ConfigurationLocation) selectedItem;
-    //    }
 
     private JPanel createToolPanel() {
         treeModel = new ResultTreeModel();
