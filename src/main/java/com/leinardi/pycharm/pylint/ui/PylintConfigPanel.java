@@ -141,14 +141,12 @@ public class PylintConfigPanel {
                 testButton.setIcon(Icons.icon("/general/inspectionsOK.png"));
                 Notifications.showInfo(
                         project,
-                        PylintBundle.message("config.pylint.path.success.title"),
                         PylintBundle.message("config.pylint.path.success.message")
                 );
             } else {
                 testButton.setIcon(Icons.icon("/general/error.png"));
                 Notifications.showError(
                         project,
-                        PylintBundle.message("config.pylint.path.failure.title"),
                         PylintBundle.message("config.pylint.path.failure.message", pathToPylint)
                 );
             }

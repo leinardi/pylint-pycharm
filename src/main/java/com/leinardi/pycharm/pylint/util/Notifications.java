@@ -36,13 +36,14 @@ public final class Notifications {
 
     private static final NotificationGroup BALLOON_GROUP = balloonGroup(message("plugin.notification.alerts"));
     private static final NotificationGroup LOG_ONLY_GROUP = logOnlyGroup(message("plugin.notification.logging"));
+    private static final String TITLE = message("plugin.name");
 
     private Notifications() {
     }
 
     public static void showInfo(final Project project, final String infoText) {
         BALLOON_GROUP
-                .createNotification("", infoText, INFORMATION, URL_OPENING_LISTENER)
+                .createNotification(TITLE, infoText, INFORMATION, URL_OPENING_LISTENER)
                 .notify(project);
     }
 
@@ -54,7 +55,7 @@ public final class Notifications {
 
     public static void showWarning(final Project project, final String warningText) {
         BALLOON_GROUP
-                .createNotification("", warningText, WARNING, URL_OPENING_LISTENER)
+                .createNotification(TITLE, warningText, WARNING, URL_OPENING_LISTENER)
                 .notify(project);
     }
 
@@ -66,7 +67,7 @@ public final class Notifications {
 
     public static void showError(final Project project, final String errorText) {
         BALLOON_GROUP
-                .createNotification("", errorText, ERROR, URL_OPENING_LISTENER)
+                .createNotification(TITLE, errorText, ERROR, URL_OPENING_LISTENER)
                 .notify(project);
     }
 

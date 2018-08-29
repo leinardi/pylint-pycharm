@@ -479,6 +479,11 @@ public class PylintToolWindowPanel extends JPanel {
         treeModel.setRootMessage(messageKey, messageArgs);
     }
 
+    public void clearResult() {
+        treeModel.clear();
+        treeModel.setRootText(null);
+    }
+
     /**
      * Clear the results and display notice to say an error occurred.
      *

@@ -120,6 +120,15 @@
                     text="Display Refactor"
                     description="Display Refactor results"
                     icon="/actions/forceRefresh.png"/>
+
+            <separator/>
+
+            <action id="PylintClearAllAction"
+                    class="com.leinardi.pycharm.pylint.actions.ClearAll"
+                    text="Clear All"
+                    description="Clear all elements in the tool window"
+                    icon="/actions/gc.png"/>
+
         </group>
 
         <group id="PylintPluginActions" text="Pylint" popup="true">
