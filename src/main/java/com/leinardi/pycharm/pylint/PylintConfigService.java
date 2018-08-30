@@ -29,9 +29,11 @@ import org.jetbrains.annotations.Nullable;
 public class PylintConfigService implements PersistentStateComponent<PylintConfigService> {
     public PylintConfigService() {
         pathToPylint = PylintBundle.message("config.pylint.path.default");
+        scanBeforeCheckin = true;
     }
 
     private String pathToPylint;
+    private boolean scanBeforeCheckin;
 
     public String getPathToPylint() {
         return pathToPylint;
@@ -39,6 +41,14 @@ public class PylintConfigService implements PersistentStateComponent<PylintConfi
 
     public void setPathToPylint(String pathToPylint) {
         this.pathToPylint = pathToPylint;
+    }
+
+    public boolean isScanBeforeCheckin() {
+        return scanBeforeCheckin;
+    }
+
+    public void setScanBeforeCheckin(boolean scanBeforeCheckin) {
+        this.scanBeforeCheckin = scanBeforeCheckin;
     }
 
     @Nullable

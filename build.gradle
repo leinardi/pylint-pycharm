@@ -1,3 +1,7 @@
+import org.commonmark.node.Node
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
+
 /*
  * Copyright 2018 Roberto Leinardi.
  *
@@ -20,7 +24,7 @@ buildscript {
         addRepos(repositories)
     }
     dependencies {
-        classpath deps.errorprone_plugin
+        classpath 'com.atlassian.commonmark:commonmark:0.11.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -28,16 +32,18 @@ buildscript {
 
 plugins {
     id 'org.jetbrains.intellij' version '0.3.7'
+    id 'net.ltgt.errorprone' version '0.0.14'
+    id 'idea'
+    id 'java'
+    id 'checkstyle'
 }
-
-apply plugin: 'idea'
-apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'java'
-apply plugin: 'net.ltgt.errorprone'
-apply plugin: 'checkstyle'
 
 def hasPyCharm = project.hasProperty('pycharmPath')
 def hasPythonPlugin = project.hasProperty('pythonPlugin')
+def props = new Properties()
+rootProject.file('src/main/resources/com/leinardi/pycharm/pylint/PylintBundle.properties').withInputStream {
+    props.load(it)
+}
 
 checkstyle {
     ignoreFailures = false // Whether this task will ignore failures and continue running the build.
@@ -49,29 +55,38 @@ checkstyle {
 
 gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
     }
 }
 
-group 'com.leinardi.plugins'
-version '0.1.0'
+group 'com.leinardi.pycharm'
+version version
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
     version ideaVersion
-    pluginName 'Pylint'
+    pluginName props.getProperty('plugin.name')
     downloadSources Boolean.valueOf(downloadIdeaSources)
-    updateSinceUntilBuild = false
+    updateSinceUntilBuild = true
     if (hasPyCharm) {
         alternativeIdePath pycharmPath
     } else if (hasPythonPlugin) {
         plugins += [pythonPlugin]
     } else {
-        throw new StopActionException("Define either pycharmPath or pythonPlugin in your gradle.properties")
+        throw new StopActionException('Define either pycharmPath or pythonPlugin in your gradle.properties')
     }
 }
+
+patchPluginXml {
+    version project.property('version')
+    sinceBuild project.property('sinceBuild')
+    untilBuild project.property('untilBuild')
+    pluginDescription props.getProperty('plugin.Pylint-PyCharm.description')
+    changeNotes getChangelogHtml()
+}
+
 
 repositories {
     addRepos(repositories)
@@ -87,4 +102,11 @@ dependencies {
         compileOnly name: 'pycharm'
     }
     compile 'com.squareup.moshi:moshi:1.6.0'
+}
+
+def getChangelogHtml() {
+    Parser parser = Parser.builder().build()
+    Node document = parser.parseReader(rootProject.file('CHANGELOG.md').newReader())
+    HtmlRenderer renderer = HtmlRenderer.builder().build()
+    renderer.render(document)
 }

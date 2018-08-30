@@ -17,17 +17,7 @@
 <idea-plugin>
     <id>com.leinardi.pycharm.pylint</id>
     <name>Pylint</name>
-    <version>0.5.0</version>
     <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Roberto Leinardi</vendor>
-
-    <description><![CDATA[
-<p>
-    This plugin provides both real-time and on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
-</p>
-    ]]></description>
-
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="145.258"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -36,16 +26,6 @@
     <!--suppress PluginXmlValidity -->
     <depends>com.intellij.modules.python</depends>
 
-    <change-notes>
-        <![CDATA[
-<ul>
-    <li>0.5.0: New: Added real-time scanning!</li>
-    <li>0.2.0: New: UX based on Checkstyle-IDEA plugin.</li>
-    <li>0.2.0: New: Plugin id and name changed (please remove manually the old plugin).</li>
-    <li>0.1.0: Initial release.</li>
-</ul>
-        ]]>
-    </change-notes>
 
     <project-components>
         <component>
@@ -72,6 +52,9 @@
                          groupKey="inspection.group"
                          level="WARNING"
                          enabledByDefault="true"/>
+
+        <checkinHandlerFactory id="CheckStyleIDEACheckInHandlerFactory"
+                               implementation="com.leinardi.pycharm.pylint.handlers.ScanFilesBeforeCheckinHandlerFactory"/>
     </extensions>
 
     <actions>

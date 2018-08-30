@@ -68,7 +68,7 @@ public class ResultTreeNode {
         this.text = PylintBundle.message("plugin.results.scan-file-result",
                 fileName,
                 ResultTreeModel.concatProblems(problemCounts));
-        icon = Icons.icon("/fileTypes/any_type.png");
+        icon = Icons.icon("/com/leinardi/pycharm/pylint/images/pythonFile.png");
     }
 
     /**
