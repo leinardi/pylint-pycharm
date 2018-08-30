@@ -22,6 +22,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
 
 /**
@@ -90,8 +91,12 @@ public class ResultTreeRenderer extends JLabel
                 setIcon(null);
             }
         }
-
-        setFont(tree.getFont());
+        if (row == 0 && !leaf) {
+            Font f = tree.getFont();
+            setFont(f.deriveFont(f.getStyle() | Font.BOLD));
+        } else {
+            setFont(tree.getFont());
+        }
 
         setForeground(UIManager.getColor(selected
                 ? "Tree.selectionForeground" : "Tree.textForeground"));
