@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.toolwindow;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileSystemItem;
 import com.leinardi.pycharm.pylint.PylintBundle;
@@ -195,9 +196,10 @@ public class ResultTreeModel extends DefaultTreeModel {
         }
 
         if (hasProblems) {
-            setRootText(PylintBundle.message("plugin.results.scan-results",
-                    concatProblems(totalCounts),
-                    results.size()));
+            setRootText(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results",
+                            concatProblems(totalCounts),
+                            results.size()), results.size()));
         } else {
             setRootMessage("plugin.results.scan-no-results");
         }
@@ -217,30 +219,40 @@ public class ResultTreeModel extends DefaultTreeModel {
 
     static String concatProblems(int[] problemCounts) {
         StringBuilder violations = new StringBuilder();
-        if (problemCounts[SeverityLevel.FATAL.ordinal()] > 0) {
-            violations.append(PylintBundle.message("plugin.results.scan-results.fatal",
-                    problemCounts[SeverityLevel.FATAL.ordinal()]));
+        int fatalCount = problemCounts[SeverityLevel.FATAL.ordinal()];
+        if (fatalCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.fatal", fatalCount),
+                    fatalCount));
             violations.append(' ');
         }
-        if (problemCounts[SeverityLevel.ERROR.ordinal()] > 0) {
-            violations.append(PylintBundle.message("plugin.results.scan-results.error",
-                    problemCounts[SeverityLevel.ERROR.ordinal()]));
-            violations.append(' ');
+        int errorsCount = problemCounts[SeverityLevel.ERROR.ordinal()];
+        if (errorsCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.error", errorsCount),
+                    errorsCount));
+            violations.append(", ");
         }
-        if (problemCounts[SeverityLevel.WARNING.ordinal()] > 0) {
-            violations.append(PylintBundle.message("plugin.results.scan-results.warning",
-                    problemCounts[SeverityLevel.WARNING.ordinal()]));
-            violations.append(' ');
+        int warningCount = problemCounts[SeverityLevel.WARNING.ordinal()];
+        if (warningCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.warning", warningCount),
+                    warningCount));
+            violations.append(", ");
         }
-        if (problemCounts[SeverityLevel.CONVENTION.ordinal()] > 0) {
-            violations.append(PylintBundle.message("plugin.results.scan-results.convention",
-                    problemCounts[SeverityLevel.CONVENTION.ordinal()]));
-            violations.append(' ');
+        int conventionCount = problemCounts[SeverityLevel.CONVENTION.ordinal()];
+        if (conventionCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.convention", conventionCount),
+                    conventionCount));
+            violations.append(", ");
         }
-        if (problemCounts[SeverityLevel.REFACTOR.ordinal()] > 0) {
-            violations.append(PylintBundle.message("plugin.results.scan-results.refactor",
-                    problemCounts[SeverityLevel.REFACTOR.ordinal()]));
-            violations.append(' ');
+        int refactorCount = problemCounts[SeverityLevel.REFACTOR.ordinal()];
+        if (refactorCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.refactor", refactorCount),
+                    refactorCount));
+            violations.append(", ");
         }
         return new String(violations.deleteCharAt(violations.length() - 2));
     }

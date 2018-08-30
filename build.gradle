@@ -63,6 +63,7 @@ intellij {
     version ideaVersion
     pluginName 'Pylint'
     downloadSources Boolean.valueOf(downloadIdeaSources)
+    updateSinceUntilBuild = false
     if (hasPyCharm) {
         alternativeIdePath pycharmPath
     } else if (hasPythonPlugin) {
