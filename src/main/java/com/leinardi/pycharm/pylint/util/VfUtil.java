@@ -67,7 +67,9 @@ public class VfUtil {
         List<VirtualFile> list = new ArrayList<>();
         ProjectFileIndex projectFileIndex = ProjectFileIndex.SERVICE.getInstance(project);
         for (VirtualFile file : virtualFiles) {
-            if (FileTypes.isPython(file.getFileType()) && !projectFileIndex.isExcluded(file)) {
+            if (FileTypes.isPython(file.getFileType())
+                    && !projectFileIndex.isExcluded(file)
+                    && !projectFileIndex.isInLibraryClasses(file)) {
                 list.add(file);
             }
         }
