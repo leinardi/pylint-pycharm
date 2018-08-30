@@ -61,6 +61,10 @@ public class PylintConfigurable implements Configurable {
     }
 
     @Override
+    public void reset() {
+    }
+
+    @Override
     public boolean isModified() {
         boolean result = !configPanel.getPathToPylint().equals(pylintConfigService.getPathToPylint());
         if (LOG.isDebugEnabled()) {
