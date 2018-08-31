@@ -17,7 +17,7 @@ helps enforcing a coding standard and sniffs for some code smells
 
 The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
 
-1. Download [pylint-plugin.jar](https://github.com/leinardi/pylint-PyCharm-plugin/releases)
+1. Download the latest [Pylint-x.x.x.zip](https://github.com/leinardi/pylint-PyCharm-plugin/releases)
 2. In PyCharm go to Preferences -> Plugins -> Install plugins from disc
    -> Select downloaded file -> Restart PyCharm when prompted.
 
@@ -27,7 +27,8 @@ TBD
 
 ## Usage
 
-TBD
+![pylint plugin screenshot](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/art/actions1.png)
+![pylint plugin screenshot](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/art/actions2.png)
 
 ## Acknowledgements
 _If I have seen further it is by standing on the sholders of Giants - Isaac Newton_
