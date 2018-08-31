@@ -118,3 +118,20 @@ def getChangelogHtml() {
 }
 
 check.dependsOn(verifyPlugin)
+
+task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask) {
+    repositoryOwner = "leinardi"
+    repositoryName = "FloatingActionButtonSpeedDial"
+    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
+    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
+    gitHubUrl = "https://api.github.com/"
+    createCommentWithAllSingleFileComments = false
+    createSingleFileComments = true
+    commentOnlyChangedContent = true
+    violations = [
+            ["FINDBUGS", ".", ".*/reports/findbugs/.*\\.xml\$", "Findbugs"],
+            ["CHECKSTYLE", ".", ".*/reports/checkstyle/.*debug\\.xml\$", "Checkstyle"],
+            ["ANDROIDLINT", ".", ".*/reports/lint-results.*\\.xml\$", "Android Lint"],
+            ["GOOGLEERRORPRONE", ".", ".*/build.log\$", "Error Prone"]
+    ]
+}
