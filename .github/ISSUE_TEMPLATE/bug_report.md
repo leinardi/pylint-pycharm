@@ -1,3 +1,9 @@
+---
+name: Bug report
+about: Create a report to help us improve
+
+---
+
 <!--
 Any HTML comment will be stripped when the markdown is rendered, so you don't need to delete them.
 
@@ -47,9 +53,9 @@ Please wrap logs with Gradle syntax highlighting (it makes them look better).
 -->
 ```Gradle
 java.lang.RuntimeException: This is an example Exception log
-    at jahirfiquitiva.libs.fabsmenu.HelloWorld
-    at jahirfiquitiva.libs.fabsmenu.HelloWorld$ThisIsNotARealLog
-    at android.app.Instrumentation.callActivityOnResume(Instrumentation.kt)
+    at com.leinardi.HelloWorld
+    at com.leinardi.HelloWorld$ThisIsNotARealLog
+    at bigcorporate.app.Instrumentation.callActivityOnResume(Instrumentation.kt)
 ```
 
 <!--
