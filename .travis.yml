@@ -1,0 +1,31 @@
+language: android
+jdk: oraclejdk8
+sudo: true
+
+os:
+  - linux
+addons:
+  apt_packages:
+    - pandoc
+
+before_cache:
+  # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    # Gradle dependencies
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+script:
+  - set -o pipefail
+  - ./gradlew clean check --profile --continue 2>&1 | tee build.log
+  - set +o pipefail
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+      ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=$TRAVIS_PULL_REQUEST -DGITHUB_OAUTH2TOKEN=$GITHUB_OAUTH2TOKEN --info
+    fi
+  - pandoc `ls -1rt build/reports/profile/profile-*.html | tail -n1` -t plain
+  - ./gradlew dependencyUpdate
