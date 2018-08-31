@@ -1,31 +1,38 @@
-language: android
+language: java
 jdk: oraclejdk8
 sudo: true
 
 os:
-  - linux
+- linux
 addons:
   apt_packages:
-    - pandoc
+  - pandoc
 
 before_cache:
-  # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+# Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
   directories:
-    # Gradle dependencies
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  # Gradle dependencies
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
+install:
+- true
+
+before_script:
+- sed -i -e 's/pycharmPath=/#pycharmPath=/g' gradle.properties
+- sed -i -e 's/#pythonPlugin=/pythonPlugin=/g' gradle.properties
 
 script:
-  - set -o pipefail
-  - ./gradlew clean check --profile --continue 2>&1 | tee build.log
-  - set +o pipefail
-  - |
-    if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-      ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=$TRAVIS_PULL_REQUEST -DGITHUB_OAUTH2TOKEN=$GITHUB_OAUTH2TOKEN --info
-    fi
-  - pandoc `ls -1rt build/reports/profile/profile-*.html | tail -n1` -t plain
-  - ./gradlew dependencyUpdate
+- set -o pipefail
+- ./gradlew clean check --profile --continue 2>&1 | tee build.log
+- set +o pipefail
+- |
+  if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+    ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=$TRAVIS_PULL_REQUEST -DGITHUB_OAUTH2TOKEN=$GITHUB_OAUTH2TOKEN --info
+  fi
+- pandoc `ls -1rt build/reports/profile/profile-*.html | tail -n1` -t plain
+- ./gradlew dependencyUpdate
