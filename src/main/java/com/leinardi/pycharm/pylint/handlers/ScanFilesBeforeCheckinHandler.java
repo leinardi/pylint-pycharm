@@ -75,13 +75,16 @@ public class ScanFilesBeforeCheckinHandler extends CheckinHandler {
                 panel.add(checkBox);
                 return panel;
             }
+
             @Override
             public void refresh() {
             }
+
             @Override
             public void saveState() {
                 pylintConfigService.setScanBeforeCheckin(checkBox.isSelected());
             }
+
             @Override
             public void restoreState() {
                 checkBox.setSelected(pylintConfigService.isScanBeforeCheckin());
