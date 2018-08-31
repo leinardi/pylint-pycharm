@@ -1,0 +1,61 @@
+<idea-plugin>
+    <id>com.leinardi.plugins.pylint_plugin</id>
+    <name>Pylint plugin</name>
+    <version>0.1.0</version>
+    <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Pylint Plugin</vendor>
+
+    <description><![CDATA[
+      <p>
+      Pylint integration plugin.
+      </p>
+      <p>
+      The plugin provides a simple terminal to run pylint from PyCharm with a single click or hotkey and easily
+      navigate through type checking results. The idea of the pylint terminal is different from the normal PyCharm
+      type checking that highlights the violations in a current file. The pylint terminal shows violations in all files in
+      your project (even in those not currently open). Pylint is a Python source code analyzer which looks for
+      programming violations, helps enforcing a coding standard and sniffs for some code smells (as defined in
+      Martin Fowler's Refactoring book).
+      </p>
+      </br>
+      <p>
+      This plugin is an adaptation for Pylint of the Dropbox mypy-PyCharm-plugin.
+      </p>
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products -->
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.python</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Pylint Terminal" icon="PylintIcons.PYLINT_SMALL" anchor="bottom"
+                    factoryClass="com.leinardi.plugins.pylint_plugin.PylintToolWindowFactory"/>
+        <projectService serviceInterface="com.leinardi.plugins.pylint_plugin.PylintConfigService"
+                        serviceImplementation="com.leinardi.plugins.pylint_plugin.PylintConfigService"/>
+    </extensions>
+
+    <actions>
+        <action id="Toggle Pylint Window" class="com.leinardi.plugins.pylint_plugin.actions.ShowPylintWindow"
+                text="Toggle pylint window">
+        </action>
+        <action id="Run Pylint" class="com.leinardi.plugins.pylint_plugin.actions.RunPylint"
+                text="Run pylint">
+        </action>
+        <action id="Previous Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.PrevViolation"
+                text="Go to previous pylint violation">
+        </action>
+        <action id="Next Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.NextViolation"
+                text="Go to next pylint violation">
+        </action>
+        <action id="Copy Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.CopyViolation"
+                text="Copy text of current pylint violation">
+        </action>
+        <action id="Expand Pylint Violation" class="com.leinardi.plugins.pylint_plugin.actions.ExpandViolations"
+                text="Collapse/expand pylint violations in file">
+        </action>
+    </actions>
+</idea-plugin>
