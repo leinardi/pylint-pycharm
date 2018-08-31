@@ -17,7 +17,7 @@
 <idea-plugin>
     <id>com.leinardi.pycharm.pylint</id>
     <name>Pylint</name>
-    <vendor url="https://github.com/leinardi/pylint-PyCharm-plugin">Roberto Leinardi</vendor>
+    <vendor url="https://github.com/leinardi/pylint-pycharm">Roberto Leinardi</vendor>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->

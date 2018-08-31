@@ -1,9 +1,9 @@
 # pylint-pycharm
 
-[![Travis](https://img.shields.io/travis/leinardi/pylint-PyCharm-plugin/master.svg?style=plastic)](https://travis-ci.org/leinardi/pylint-PyCharm-plugin)
-[![GitHub license](https://img.shields.io/github/license/leinardi/pylint-PyCharm-plugin.svg?style=plastic)](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/LICENSE) 
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/leinardi/pylint-PyCharm-plugin.svg?columns=all&style=plastic)](https://waffle.io/leinardi/pylint-PyCharm-plugin) 
-[![Stars](https://img.shields.io/github/stars/leinardi/pylint-PyCharm-plugin.svg?style=social&label=Stars)](https://github.com/leinardi/pylint-PyCharm-plugin/stargazers) 
+[![Travis](https://img.shields.io/travis/leinardi/pylint-pycharm/master.svg?style=plastic)](https://travis-ci.org/leinardi/pylint-pycharm)
+[![GitHub license](https://img.shields.io/github/license/leinardi/pylint-pycharm.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/blob/master/LICENSE) 
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/leinardi/pylint-pycharm.svg?columns=all&style=plastic)](https://waffle.io/leinardi/pylint-pycharm) 
+[![Stars](https://img.shields.io/github/stars/leinardi/pylint-pycharm.svg?style=social&label=Stars)](https://github.com/leinardi/pylint-pycharm/stargazers) 
 
 This plugin provides both real-time and on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
 
@@ -11,13 +11,13 @@ Pylint is a Python source code analyzer which looks for programming errors,
 helps enforcing a coding standard and sniffs for some code smells 
 (as defined in Martin Fowler's Refactoring book).
 
-![pylint plugin screenshot](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/art/pylint-pycharm.png)
+![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-pycharm.png)
 
 ## Installation steps
 
 The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
 
-1. Download the latest [Pylint-x.x.x.zip](https://github.com/leinardi/pylint-PyCharm-plugin/releases)
+1. Download the latest [Pylint-x.x.x.zip](https://github.com/leinardi/pylint-pycharm/releases)
 2. In PyCharm go to Preferences -> Plugins -> Install plugins from disc
    -> Select downloaded file -> Restart PyCharm when prompted.
 
@@ -27,8 +27,8 @@ TBD
 
 ## Usage
 
-![pylint plugin screenshot](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/art/actions1.png)
-![pylint plugin screenshot](https://github.com/leinardi/pylint-PyCharm-plugin/blob/master/art/actions2.png)
+![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions1.png)
+![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions2.png)
 
 ## Acknowledgements
 _If I have seen further it is by standing on the sholders of Giants - Isaac Newton_

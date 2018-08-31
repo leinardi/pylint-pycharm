@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-rootProject.name = 'pylint-PyCharm-plugin'
+rootProject.name = 'pylint-pycharm'
 
