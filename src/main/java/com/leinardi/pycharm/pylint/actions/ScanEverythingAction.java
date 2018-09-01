@@ -16,9 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.util.VfUtil;
@@ -29,29 +27,16 @@ import java.util.List;
 class ScanEverythingAction implements Runnable {
 
     private final Project project;
-    private final Module module;
 
     ScanEverythingAction(@NotNull final Project project) {
         this.project = project;
-        this.module = null;
-    }
-
-    ScanEverythingAction(@NotNull final Module module) {
-        this.project = module.getProject();
-        this.module = module;
     }
 
     @Override
     public void run() {
         List<VirtualFile> filesToScan;
-        if (module != null) {
-            // all non-excluded files of a module
-            final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-            filesToScan = VfUtil.flattenFiles(moduleRootManager.getContentRoots());
-        } else {
-            // all non-excluded files of the project
-            filesToScan = VfUtil.flattenFiles(new VirtualFile[]{project.getBaseDir()});
-        }
+        // all non-excluded files of the project
+        filesToScan = VfUtil.flattenFiles(new VirtualFile[]{project.getBaseDir()});
         filesToScan = VfUtil.filterOnlyPythonProjectFiles(project, filesToScan);
 
         project.getComponent(PylintPlugin.class).asyncScanFiles(filesToScan);

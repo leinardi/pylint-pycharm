@@ -24,6 +24,8 @@ import com.leinardi.pycharm.pylint.checker.Problem;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,16 +104,21 @@ public class ProcessResultsThread implements Runnable {
     }
 
     private String filenameFrom(final Issue issue) {
-        return withTrailingSeparator(baseDir) + issue.getPath();
+        String path = normalisePath(withTrailingSeparator(baseDir) + issue.getPath());
+        if (new File(path).exists()) {
+            return path;
+        } else {
+            return normalisePath(issue.getPath());
+        }
     }
 
-    //    private String normalisePath(String prefixedFileName) {
-    //        try {
-    //            return Paths.get(prefixedFileName).normalize().toString();
-    //        } catch (InvalidPathException e) {
-    //            return prefixedFileName;  // cannot normalize
-    //        }
-    //    }
+    private String normalisePath(String prefixedFileName) {
+        try {
+            return Paths.get(prefixedFileName).normalize().toString();
+        } catch (InvalidPathException e) {
+            return prefixedFileName;  // cannot normalize
+        }
+    }
 
     private String withTrailingSeparator(final String path) {
         if (path != null && !path.endsWith(File.separator)) {

@@ -98,8 +98,10 @@ public class ResultTreeNode {
             icon = Icons.icon("/nodes/class.png");
         } else if (SeverityLevel.REFACTOR.equals(severity)) {
             icon = Icons.icon("/actions/forceRefresh.png");
-        } else {
+        } else if (SeverityLevel.INFO.equals(severity)) {
             icon = Icons.icon("/general/information.png");
+        } else {
+            throw new IllegalStateException("Unknown severity level " + severity.name());
         }
     }
 

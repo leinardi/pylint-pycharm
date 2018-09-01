@@ -104,6 +104,12 @@
                     description="Display Refactor results"
                     icon="/actions/forceRefresh.png"/>
 
+            <action id="PylintDisplayInfoAction"
+                    class="com.leinardi.pycharm.pylint.actions.DisplayInfo"
+                    text="Display Info"
+                    description="Display info results"
+                    icon="/general/information.png"/>
+
             <separator/>
 
             <action id="PylintClearAllAction"

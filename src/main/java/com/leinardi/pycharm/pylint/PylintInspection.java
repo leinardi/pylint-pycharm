@@ -27,11 +27,9 @@ import com.leinardi.pycharm.pylint.checker.Problem;
 import com.leinardi.pycharm.pylint.checker.ScanFiles;
 import com.leinardi.pycharm.pylint.checker.ScannableFile;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
-import com.leinardi.pycharm.pylint.ui.PylintInspectionPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JComponent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,20 +48,12 @@ public class PylintInspection extends LocalInspectionTool {
     private static final Logger LOG = Logger.getInstance(PylintInspection.class);
     private static final List<Problem> NO_PROBLEMS_FOUND = Collections.emptyList();
 
-    private final PylintInspectionPanel configPanel = new PylintInspectionPanel();
-
     private PylintPlugin plugin(final Project project) {
         final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }
         return pylintPlugin;
-    }
-
-    @Nullable
-    @Override
-    public JComponent createOptionsPanel() {
-        return configPanel;
     }
 
     @Override

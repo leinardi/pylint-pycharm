@@ -98,13 +98,14 @@ public class PylintToolWindowPanel extends JPanel {
     private boolean displayingWarnings = true;
     private boolean displayingConvention = true;
     private boolean displayingRefactor = true;
+    private boolean displayingInfo = true;
 
     private JTree resultsTree;
     private JToolBar progressPanel;
     private JProgressBar progressBar;
     private JLabel progressLabel;
     private ResultTreeModel treeModel;
-    private boolean scrollToSource = true;
+    private boolean scrollToSource;
 
     static {
         try {
@@ -534,6 +535,9 @@ public class PylintToolWindowPanel extends JPanel {
         if (displayingRefactor) {
             severityLevels.add(SeverityLevel.REFACTOR);
         }
+        if (displayingInfo) {
+            severityLevels.add(SeverityLevel.INFO);
+        }
         return severityLevels.toArray(new SeverityLevel[0]);
     }
 
@@ -591,5 +595,13 @@ public class PylintToolWindowPanel extends JPanel {
 
     public void setDisplayingRefactor(final boolean displayingRefactor) {
         this.displayingRefactor = displayingRefactor;
+    }
+
+    public boolean isDisplayingInfo() {
+        return displayingInfo;
+    }
+
+    public void setDisplayingInfo(boolean displayingInfo) {
+        this.displayingInfo = displayingInfo;
     }
 }

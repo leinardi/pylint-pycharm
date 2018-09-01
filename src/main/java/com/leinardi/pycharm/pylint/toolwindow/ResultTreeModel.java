@@ -254,6 +254,13 @@ public class ResultTreeModel extends DefaultTreeModel {
                     refactorCount));
             violations.append(", ");
         }
+        int infoCount = problemCounts[SeverityLevel.INFO.ordinal()];
+        if (infoCount > 0) {
+            violations.append(StringUtil.pluralize(
+                    PylintBundle.message("plugin.results.scan-results.info", infoCount),
+                    infoCount));
+            violations.append(", ");
+        }
         return new String(violations.deleteCharAt(violations.length() - 2));
     }
 }

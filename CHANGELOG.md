@@ -1,3 +1,7 @@
+**[0.8.0] - 2018-09-01**
+ - New: Added missing type `info`
+ - New: Autoscroll to Source is disabled by default
+
 **[0.7.1] - 2018-09-01**
  - New: Project has moved to [https://github.com/leinardi/pylint-pycharm](https://github.com/leinardi/pylint-pycharm)
 

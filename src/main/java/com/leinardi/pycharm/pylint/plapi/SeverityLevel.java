@@ -31,6 +31,8 @@ public enum SeverityLevel {
     @Json(name = "convention")
     CONVENTION,
     @Json(name = "refactor")
-    REFACTOR
+    REFACTOR,
+    @Json(name = "info")
+    INFO
 }
 
