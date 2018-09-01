@@ -17,7 +17,7 @@ helps enforcing a coding standard and sniffs for some code smells
 
 The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
 
-1. Download the latest [Pylint-x.x.x.zip](https://github.com/leinardi/pylint-pycharm/releases)
+1. Download the latest [pylint-plugin-x.x.x.zip](https://github.com/leinardi/pylint-pycharm/releases)
 2. In PyCharm go to Settings... -> Plugins -> Install plugins from disc
    -> Select downloaded file -> Restart PyCharm when prompted.
 
