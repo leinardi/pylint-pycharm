@@ -27,10 +27,10 @@ The only configuration needed is to set the path to Pylint executable, and only 
 inside the PATH environment variable.
 
 To reach the Plugin configuration screen you can go to Settings... -> Other Settings -> Pylint
-or simply click the gear icon in the side bar of the Pylint tool window.
+or simply click the gear icon from the side bar of the Pylint tool window.
 
 To change the path to your Pylint executable you can either type the path directly or use 
-the Browse button to opena file selection dialog.
+the Browse button to open a file selection dialog.
 
 Once you changed the path you should press the Test button to check if the plugin is able to run
 the executable.

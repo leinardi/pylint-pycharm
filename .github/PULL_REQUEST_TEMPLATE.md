@@ -26,3 +26,21 @@ Describe briefly what your pull request proposes to fix. Especially if you have 
 give a summary of what your contribution as a whole is trying to solve.
 Also, please describe shortly how you tested that your fix actually works.
 -->
+
+### Type of Changes
+<!-- Leave the corresponding lines for the applicable type of change: -->
+|   | Type |
+| ------------- | ------------- |
+| ✓  | :bug: Bug fix  |
+| ✓  | :sparkles: New feature |
+| ✓  | :hammer: Refactoring  |
+| ✓  | :scroll: Docs |
+
+### Related Issue
+
+<!-- 
+If this PR fixes a particular issue, use the following to automatically close that issue
+once this PR gets merged:
+
+Closes #XXX 
+-->
