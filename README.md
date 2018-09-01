@@ -18,23 +18,42 @@ helps enforcing a coding standard and sniffs for some code smells
 The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
 
 1. Download the latest [Pylint-x.x.x.zip](https://github.com/leinardi/pylint-pycharm/releases)
-2. In PyCharm go to Preferences -> Plugins -> Install plugins from disc
+2. In PyCharm go to Settings... -> Plugins -> Install plugins from disc
    -> Select downloaded file -> Restart PyCharm when prompted.
 
 ## Configuration
 
-TBD
+The only configuration needed is to set the path to Pylint executable, and only if is not already
+inside the PATH environment variable.
+
+To reach the Plugin configuration screen you can go to Settings... -> Other Settings -> Pylint
+or simply click the gear icon in the side bar of the Pylint tool window.
+
+To change the path to your Pylint executable you can either type the path directly or use 
+the Browse button to opena file selection dialog.
+
+Once you changed the path you should press the Test button to check if the plugin is able to run
+the executable.
+
+![plugin settings screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-settings.png)
+
+### Inspection severity
+
+By default, Pylint message severity is set to Warning. It is possible to change the severity level
+by going to Settings... -> Editor -> Inspections -> Pylint -> Severity:
+
+![plugin inspection severity screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-inspection-severity.png)
 
 ## Usage
 
-![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions1.png)
-![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions2.png)
+![plugin actions screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions1.png)
+![plugin actions screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/actions2.png)
 
 ## Acknowledgements
 _If I have seen further it is by standing on the sholders of Giants - Isaac Newton_
 
 A huge thank you to the project [CheckStyle-IDEA](https://github.com/jshiell/checkstyle-idea), 
-which code and architecture I have heavily used for when coding this plugin.
+which code and architecture I have heavily used for when developing this plugin.
 
 ## License
 
