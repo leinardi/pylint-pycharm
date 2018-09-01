@@ -53,7 +53,7 @@ by going to Settings... -> Editor -> Inspections -> Pylint -> Severity:
 _If I have seen further it is by standing on the sholders of Giants - Isaac Newton_
 
 A huge thank you to the project [CheckStyle-IDEA](https://github.com/jshiell/checkstyle-idea), 
-which code and architecture I have heavily used for when developing this plugin.
+which code and architecture I have heavily used when developing this plugin.
 
 ## License
 
