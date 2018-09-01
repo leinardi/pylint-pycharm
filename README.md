@@ -1,5 +1,5 @@
 # pylint-pycharm
-
+[![GitHub (pre-)release](https://img.shields.io/github/release/leinardi/pylint-pycharm/all.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/releases)
 [![Travis](https://img.shields.io/travis/leinardi/pylint-pycharm/master.svg?style=plastic)](https://travis-ci.org/leinardi/pylint-pycharm)
 [![GitHub license](https://img.shields.io/github/license/leinardi/pylint-pycharm.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/blob/master/LICENSE) 
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/leinardi/pylint-pycharm.svg?columns=all&style=plastic)](https://waffle.io/leinardi/pylint-pycharm) 
