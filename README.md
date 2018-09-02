@@ -14,20 +14,21 @@ helps enforcing a coding standard and sniffs for some code smells
 ![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-pycharm.png)
 
 ## Installation steps
-
 The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
 
-1. Download the [pylint-plugin-0.8.0.zip](https://github.com/leinardi/pylint-pycharm/releases)
-2. In PyCharm go to Settings... -> Plugins -> Install plugins from disc
-   -> Select downloaded file -> Restart PyCharm when prompted.
+1. In the **Settings/Preferences** dialog (<kbd>CTRL</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>), click **Plugins**. The [Plugins page](https://www.jetbrains.com/help/pycharm/plugins-settings.html) opens.
+2. Click **Browse repositories**.
+3. In the [Browse Repositories dialog](https://www.jetbrains.com/help/pycharm/browse-repositories-dialog.html) that opens, right-click on the plugin named **Pylint** and select **Download and Install**.
+4. Confirm your intention to download and install the selected plugin.
+5. Click **Close**.
+6. Click **OK** in the **Settings** dialog and restart PyCharm for the changes to take effect.
 
 ## Configuration
 
 The only configuration needed is to set the path to Pylint executable, and only if is not already
 inside the PATH environment variable.
 
-To reach the Plugin configuration screen you can go to Settings... -> Other Settings -> Pylint
-or simply click the gear icon from the side bar of the Pylint tool window.
+To reach the Plugin configuration screen you can open **Settings/Preferences** dialog (<kbd>CTRL</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>), click **Other Settings**  and then **Pylint** or simply click the gear icon from the side bar of the Pylint tool window.
 
 To change the path to your Pylint executable you can either type the path directly or use 
 the Browse button to open a file selection dialog.
@@ -40,7 +41,7 @@ the executable.
 ### Inspection severity
 
 By default, Pylint message severity is set to Warning. It is possible to change the severity level
-by going to Settings... -> Editor -> Inspections -> Pylint -> Severity:
+by going to **Settings/Preferences** dialog (<kbd>CTRL</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>) -> **Editor** -> **Inspections** -> **Pylint** -> **Severity**:
 
 ![plugin inspection severity screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-inspection-severity.png)
 
