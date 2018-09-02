@@ -61,7 +61,7 @@ The easiest way to ignore a specific folder is to mark it as Excluded from PyCha
 
 More info [here](https://www.jetbrains.com/help/pycharm/configuring-folders-within-a-content-root.html#mark). 
 
-### The name of the plugin is `pylint-pycharm`, can I use it also with IntelliJ IDEA?
+### The name of the plugin is `pylint-pycharm`, can I also use it with IntelliJ IDEA?
 
 This plugin officially supports only PyCharm, but it should work also on IntelliJ IDEA
 if you have the [Python Community Edition](https://plugins.jetbrains.com/plugin/7322-python-community-edition)
