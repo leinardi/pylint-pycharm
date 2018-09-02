@@ -65,7 +65,14 @@ More info [here](https://www.jetbrains.com/help/pycharm/configuring-folders-with
 
 This plugin officially supports only PyCharm, but it should work also on IntelliJ IDEA
 if you have the [Python Community Edition](https://plugins.jetbrains.com/plugin/7322-python-community-edition)
-plugin installed. If it does not work, feel free to report an bug on the issue tracker.
+plugin installed. If it does not work, feel free to open a bug on the [issue tracker](https://github.com/leinardi/pylint-pycharm/issues).
+
+### I like this plugin, how can I support it?
+
+The best way to support this plugin is to rate it on the [JetBrains Plugin Repository page](https://plugins.jetbrains.com/plugin/11084-pylint) and to star this project on GitHub.
+Feedback is always welcome: if you found a bug or would like to suggest a feature,
+feel free to open an issue on the [issue tracker](https://github.com/leinardi/pylint-pycharm/issues). If your feedback doesn't fall in the previous categories,
+you can always leave a comment on the [Plugin Repository page](https://plugins.jetbrains.com/plugin/11084-pylint).
 
 ## Acknowledgements
 _If I have seen further it is by standing on the sholders of Giants - Isaac Newton_
