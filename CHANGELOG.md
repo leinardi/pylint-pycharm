@@ -1,3 +1,6 @@
+**[0.9.0] 2018-09-03**
+ - New: Showing better info to the user if Pylint is missing.
+ 
 **[0.8.0] - 2018-09-01**
  - New: Added missing type `info`
  - New: Autoscroll to Source is disabled by default
