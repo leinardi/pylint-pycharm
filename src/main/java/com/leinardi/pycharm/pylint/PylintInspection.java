@@ -27,6 +27,7 @@ import com.leinardi.pycharm.pylint.checker.Problem;
 import com.leinardi.pycharm.pylint.checker.ScanFiles;
 import com.leinardi.pycharm.pylint.checker.ScannableFile;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
+import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +71,11 @@ public class PylintInspection extends LocalInspectionTool {
         LOG.debug("Inspection has been invoked.");
 
         final PylintPlugin plugin = plugin(manager.getProject());
+
+        if (!PylintRunner.isPylintAvailable(plugin.getProject())) {
+            LOG.debug("Scan failed: Pylint not available.");
+            return NO_PROBLEMS_FOUND;
+        }
 
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {

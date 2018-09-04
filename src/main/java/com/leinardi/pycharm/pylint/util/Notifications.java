@@ -16,8 +16,13 @@
 
 package com.leinardi.pycharm.pylint.util;
 
+import com.intellij.ide.BrowserUtil;
 import com.intellij.notification.NotificationGroup;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.leinardi.pycharm.pylint.PylintBundle;
+import com.leinardi.pycharm.pylint.actions.Settings;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -83,6 +88,19 @@ public final class Notifications {
                 .notify(project);
     }
 
+    public static void showPylintNotAvailable(final Project project) {
+        BALLOON_GROUP
+                .createNotification(
+                        TITLE,
+                        PylintBundle.message("plugin.notification.pylint-not-found.subtitle"),
+                        PylintBundle.message("plugin.notification.pylint-not-found.content"),
+                        ERROR,
+                        URL_OPENING_LISTENER)
+                .addAction(new OpenInstallPylintDocsAction())
+                .addAction(new OpenPluginSettingsAction())
+                .notify(project);
+    }
+
     @NotNull
     private static String messageFor(final Throwable t) {
         if (t.getCause() != null) {
@@ -98,6 +116,28 @@ public final class Notifications {
         return t.getMessage() + "<br>" + sw.toString()
                 .replaceAll("\t", "&nbsp;&nbsp;")
                 .replaceAll("\n", "<br>");
+    }
+
+    private static class OpenInstallPylintDocsAction extends AnAction {
+        OpenInstallPylintDocsAction() {
+            super(PylintBundle.message("plugin.notification.action.how-to-install-pylint"));
+        }
+
+        @Override
+        public void actionPerformed(AnActionEvent e) {
+            BrowserUtil.browse(PylintBundle.message("pylint.docs.installing-pylint.url"));
+        }
+    }
+
+    private static class OpenPluginSettingsAction extends AnAction {
+        OpenPluginSettingsAction() {
+            super(PylintBundle.message("plugin.notification.action.plugin-settings"));
+        }
+
+        @Override
+        public void actionPerformed(AnActionEvent e) {
+            new Settings().actionPerformed(e);
+        }
     }
 
 }
