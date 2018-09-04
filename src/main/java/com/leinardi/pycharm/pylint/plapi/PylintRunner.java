@@ -77,10 +77,17 @@ public class PylintRunner {
         if (pathToPylint.isEmpty()) {
             throw new PylintToolException("Path to Pylint executable not set (check Plugin Settings)");
         }
+
+        String pathToPylintrcFile = pylintConfigService.getPathToPylintrcFile();
+
         GeneralCommandLine generalCommandLine = new GeneralCommandLine(pathToPylint);
         generalCommandLine.setCharset(Charset.forName("UTF-8"));
         generalCommandLine.addParameter("-f");
         generalCommandLine.addParameter("json");
+        if (!pathToPylintrcFile.equals("")) {
+            generalCommandLine.addParameter("--rcfile");
+            generalCommandLine.addParameter(pathToPylintrcFile);
+        }
         for (String file : filesToScan) {
             generalCommandLine.addParameter(file);
         }

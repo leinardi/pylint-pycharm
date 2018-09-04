@@ -76,6 +76,7 @@ public class PylintConfigurable implements Configurable {
     @Override
     public void apply() {
         pylintConfigService.setPathToPylint(configPanel.getPathToPylint());
+        pylintConfigService.setPathToPylintrcFile(configPanel.getPathToPylintrcFile());
     }
 
     @Override
