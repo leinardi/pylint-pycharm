@@ -181,7 +181,7 @@ public class PylintConfigPanel {
         @Override
         public void actionPerformed(final ActionEvent e) {
             String pathToPylint = getPathToPylint();
-            if (PylintRunner.isPathToPylintValid(pathToPylint)) {
+            if (PylintRunner.isPathToPylintValid(pathToPylint, project)) {
                 testButton.setIcon(Icons.icon("/general/inspectionsOK.png"));
                 Notifications.showInfo(
                         project,
