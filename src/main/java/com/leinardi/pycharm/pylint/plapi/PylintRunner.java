@@ -74,6 +74,21 @@ public class PylintRunner {
         return isPathToPylintValid(pylintConfigService.getPathToPylint());
     }
 
+    private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
+        if (pathToPylintrcFile.isEmpty()) {
+            return "";
+        } else if (!pathToPylintrcFile.startsWith(File.separator)) {
+            pathToPylintrcFile = project.getBasePath() + File.separator + pathToPylintrcFile;
+        }
+
+        VirtualFile pylintrcFile = LocalFileSystem.getInstance().findFileByPath(pathToPylintrcFile);
+        if (pylintrcFile == null || !pylintrcFile.exists()) {
+            throw new PylintPluginException("pylintrc file is not valid. File does not exist or can't be read.");
+        }
+
+        return pathToPylintrcFile;
+    }
+
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
         if (!isPylintAvailable(project)) {
             Notifications.showPylintNotAvailable(project);
@@ -91,10 +106,17 @@ public class PylintRunner {
         if (pathToPylint.isEmpty()) {
             throw new PylintToolException("Path to Pylint executable not set (check Plugin Settings)");
         }
+
+        String pathToPylintrcFile = getPylintrcFile(project, pylintConfigService.getPathToPylintrcFile());
+
         GeneralCommandLine generalCommandLine = new GeneralCommandLine(pathToPylint);
         generalCommandLine.setCharset(Charset.forName("UTF-8"));
         generalCommandLine.addParameter("-f");
         generalCommandLine.addParameter("json");
+        if (!pathToPylintrcFile.isEmpty()) {
+            generalCommandLine.addParameter("--rcfile");
+            generalCommandLine.addParameter(pathToPylintrcFile);
+        }
         for (String file : filesToScan) {
             generalCommandLine.addParameter(file);
         }
