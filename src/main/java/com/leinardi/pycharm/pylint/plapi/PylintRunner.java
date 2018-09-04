@@ -64,6 +64,21 @@ public class PylintRunner {
         }
     }
 
+    private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
+        if (pathToPylintrcFile.equals("")) {
+            return "";
+        } else if (!pathToPylintrcFile.startsWith(File.separator)) {
+            pathToPylintrcFile = project.getBasePath() + File.separator + pathToPylintrcFile;
+        }
+
+        VirtualFile pylintrcFile = LocalFileSystem.getInstance().findFileByPath(pathToPylintrcFile);
+        if (pylintrcFile == null || !pylintrcFile.exists()) {
+            throw new PylintPluginException("pylintrc file is not valid. File does not exist or can't be read.");
+        }
+
+        return pathToPylintrcFile;
+    }
+
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
         if (filesToScan.isEmpty()) {
@@ -78,7 +93,7 @@ public class PylintRunner {
             throw new PylintToolException("Path to Pylint executable not set (check Plugin Settings)");
         }
 
-        String pathToPylintrcFile = pylintConfigService.getPathToPylintrcFile();
+        String pathToPylintrcFile = getPylintrcFile(project, pylintConfigService.getPathToPylintrcFile());
 
         GeneralCommandLine generalCommandLine = new GeneralCommandLine(pathToPylint);
         generalCommandLine.setCharset(Charset.forName("UTF-8"));
