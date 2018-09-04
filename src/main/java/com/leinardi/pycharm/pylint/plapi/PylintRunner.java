@@ -26,6 +26,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PathUtil;
 import com.jetbrains.python.sdk.PySdkUtil;
 import com.jetbrains.python.sdk.PythonEnvUtil;
+import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
@@ -37,9 +38,11 @@ import com.squareup.moshi.Types;
 import okio.Okio;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
@@ -48,7 +51,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class PylintRunner {
     private static final String ENV_KEY_VIRTUAL_ENV = "VIRTUAL_ENV";
@@ -65,12 +71,12 @@ public class PylintRunner {
                 return false;
             }
         }
-        GeneralCommandLine generalCommandLine = getPylintCommandLine(project, pathToPylint);
-        generalCommandLine.addParameter("--help-msg");
-        generalCommandLine.addParameter("E1101");
+        GeneralCommandLine cmd = getPylintCommandLine(project, pathToPylint);
+        cmd.addParameter("--help-msg");
+        cmd.addParameter("E1101");
         final Process process;
         try {
-            process = generalCommandLine.createProcess();
+            process = cmd.createProcess();
             process.waitFor();
             return process.exitValue() == 0;
         } catch (ExecutionException | InterruptedException e) {
@@ -99,6 +105,26 @@ public class PylintRunner {
         }
 
         return pathToPylintrcFile;
+    }
+
+    public static String tryToFindPylintPath() {
+        GeneralCommandLine cmd = new GeneralCommandLine("which");
+        cmd.addParameter(PylintBundle.message("config.pylint.path.default"));
+        final Process process;
+        try {
+            process = cmd.createProcess();
+            Optional<String> path = new BufferedReader(
+                    new InputStreamReader(cmd.createProcess().getInputStream(), UTF_8))
+                    .lines()
+                    .findFirst();
+            process.waitFor();
+            if (process.exitValue() != 0 || !path.isPresent()) {
+                return "";
+            }
+            return path.get();
+        } catch (ExecutionException | InterruptedException e) {
+            return "";
+        }
     }
 
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
