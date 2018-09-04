@@ -65,7 +65,7 @@ public class PylintRunner {
     }
 
     private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
-        if (pathToPylintrcFile.equals("")) {
+        if (pathToPylintrcFile.isEmpty()) {
             return "";
         } else if (!pathToPylintrcFile.startsWith(File.separator)) {
             pathToPylintrcFile = project.getBasePath() + File.separator + pathToPylintrcFile;
@@ -99,7 +99,7 @@ public class PylintRunner {
         generalCommandLine.setCharset(Charset.forName("UTF-8"));
         generalCommandLine.addParameter("-f");
         generalCommandLine.addParameter("json");
-        if (!pathToPylintrcFile.equals("")) {
+        if (!pathToPylintrcFile.isEmpty()) {
             generalCommandLine.addParameter("--rcfile");
             generalCommandLine.addParameter(pathToPylintrcFile);
         }
