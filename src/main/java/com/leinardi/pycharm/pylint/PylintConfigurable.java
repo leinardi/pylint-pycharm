@@ -66,7 +66,8 @@ public class PylintConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        boolean result = !configPanel.getPathToPylint().equals(pylintConfigService.getPathToPylint());
+        boolean result = !configPanel.getPathToPylint().equals(pylintConfigService.getPathToPylint())
+                || !configPanel.getPathToPylintrcFile().equals(pylintConfigService.getPathToPylintrcFile());
         if (LOG.isDebugEnabled()) {
             LOG.debug("Has config changed? " + result);
         }
