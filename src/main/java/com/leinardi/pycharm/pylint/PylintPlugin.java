@@ -26,7 +26,9 @@ import com.leinardi.pycharm.pylint.checker.ScanFiles;
 import com.leinardi.pycharm.pylint.checker.ScannerListener;
 import com.leinardi.pycharm.pylint.checker.UiFeedbackScannerListener;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
+import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import com.leinardi.pycharm.pylint.util.Async;
+import com.leinardi.pycharm.pylint.util.Notifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,11 +99,14 @@ public final class PylintPlugin implements ProjectComponent {
     @Override
     public void projectOpened() {
         LOG.debug("Project opened.");
+        if (!PylintRunner.isPylintAvailable(project)) {
+            Notifications.showPylintNotAvailable(project);
+        }
     }
 
     @Override
     public void projectClosed() {
-        LOG.debug("Project closed; invalidating checkers.");
+        LOG.debug("Project closed.");
     }
 
     @Override

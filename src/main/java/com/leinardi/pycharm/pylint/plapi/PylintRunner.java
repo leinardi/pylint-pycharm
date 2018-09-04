@@ -25,6 +25,7 @@ import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
 import com.leinardi.pycharm.pylint.exception.PylintToolException;
+import com.leinardi.pycharm.pylint.util.Notifications;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -37,6 +38,7 @@ import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +66,14 @@ public class PylintRunner {
         }
     }
 
+    public static boolean isPylintAvailable(Project project) {
+        PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
+        if (pylintConfigService == null) {
+            throw new IllegalStateException("PylintConfigService is null");
+        }
+        return isPathToPylintValid(pylintConfigService.getPathToPylint());
+    }
+
     private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
         if (pathToPylintrcFile.isEmpty()) {
             return "";
@@ -80,6 +90,10 @@ public class PylintRunner {
     }
 
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
+        if (!isPylintAvailable(project)) {
+            Notifications.showPylintNotAvailable(project);
+            return Collections.emptyList();
+        }
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
         if (filesToScan.isEmpty()) {
             throw new PylintPluginException("Illegal state: filesToScan is empty");
