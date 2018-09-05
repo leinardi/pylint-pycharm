@@ -22,13 +22,14 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(name = "PylintConfigService", storages = {@Storage("pylint.xml")})
 public class PylintConfigService implements PersistentStateComponent<PylintConfigService> {
     public PylintConfigService() {
-        pathToPylint = PylintBundle.message("config.pylint.path.default");
+        pathToPylint = PylintRunner.tryToFindPylintPath();
         pathToPylintrcFile = "";
         scanBeforeCheckin = true;
     }

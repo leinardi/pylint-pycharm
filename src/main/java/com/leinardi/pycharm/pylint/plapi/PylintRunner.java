@@ -19,8 +19,14 @@ package com.leinardi.pycharm.pylint.plapi;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.PathUtil;
+import com.jetbrains.python.sdk.PySdkUtil;
+import com.jetbrains.python.sdk.PythonEnvUtil;
+import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
@@ -30,35 +36,47 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import okio.Okio;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class PylintRunner {
+    private static final String ENV_KEY_VIRTUAL_ENV = "VIRTUAL_ENV";
+    private static final String ENV_KEY_PATH = "PATH";
+    private static final String ENV_KEY_PYTHONHOME = "PYTHONHOME";
+
     private PylintRunner() {
     }
 
-    public static boolean isPathToPylintValid(String pathToPylint) {
+    public static boolean isPathToPylintValid(String pathToPylint, Project project) {
         if (pathToPylint.startsWith(File.separator)) {
             VirtualFile pylintFile = LocalFileSystem.getInstance().findFileByPath(pathToPylint);
             if (pylintFile == null || !pylintFile.exists()) {
                 return false;
             }
         }
-        GeneralCommandLine generalCommandLine = new GeneralCommandLine(pathToPylint);
-        generalCommandLine.addParameter("--help-msg");
-        generalCommandLine.addParameter("E1101");
+        GeneralCommandLine cmd = getPylintCommandLine(project, pathToPylint);
+        cmd.addParameter("--help-msg");
+        cmd.addParameter("E1101");
         final Process process;
         try {
-            process = generalCommandLine.createProcess();
+            process = cmd.createProcess();
             process.waitFor();
             return process.exitValue() == 0;
         } catch (ExecutionException | InterruptedException e) {
@@ -71,7 +89,7 @@ public class PylintRunner {
         if (pylintConfigService == null) {
             throw new IllegalStateException("PylintConfigService is null");
         }
-        return isPathToPylintValid(pylintConfigService.getPathToPylint());
+        return isPathToPylintValid(pylintConfigService.getPathToPylint(), project);
     }
 
     private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
@@ -87,6 +105,26 @@ public class PylintRunner {
         }
 
         return pathToPylintrcFile;
+    }
+
+    public static String tryToFindPylintPath() {
+        GeneralCommandLine cmd = new GeneralCommandLine("which");
+        cmd.addParameter(PylintBundle.message("config.pylint.path.default"));
+        final Process process;
+        try {
+            process = cmd.createProcess();
+            Optional<String> path = new BufferedReader(
+                    new InputStreamReader(cmd.createProcess().getInputStream(), UTF_8))
+                    .lines()
+                    .findFirst();
+            process.waitFor();
+            if (process.exitValue() != 0 || !path.isPresent()) {
+                return "";
+            }
+            return path.get();
+        } catch (ExecutionException | InterruptedException e) {
+            return "";
+        }
     }
 
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
@@ -109,26 +147,31 @@ public class PylintRunner {
 
         String pathToPylintrcFile = getPylintrcFile(project, pylintConfigService.getPathToPylintrcFile());
 
-        GeneralCommandLine generalCommandLine = new GeneralCommandLine(pathToPylint);
-        generalCommandLine.setCharset(Charset.forName("UTF-8"));
-        generalCommandLine.addParameter("-f");
-        generalCommandLine.addParameter("json");
+        GeneralCommandLine cmd = getPylintCommandLine(project, pathToPylint);
+
+        cmd.setCharset(Charset.forName("UTF-8"));
+        cmd.addParameter("-f");
+        cmd.addParameter("json");
+
+        injectEnvironmentVariables(project, cmd);
+
         if (!pathToPylintrcFile.isEmpty()) {
-            generalCommandLine.addParameter("--rcfile");
-            generalCommandLine.addParameter(pathToPylintrcFile);
+            cmd.addParameter("--rcfile");
+            cmd.addParameter(pathToPylintrcFile);
         }
         for (String file : filesToScan) {
-            generalCommandLine.addParameter(file);
+            cmd.addParameter(file);
         }
 
-        generalCommandLine.setWorkDirectory(project.getBasePath());
+        cmd.setWorkDirectory(project.getBasePath());
         final Process process;
         try {
-            process = generalCommandLine.createProcess();
+            process = cmd.createProcess();
             Moshi moshi = new Moshi.Builder().build();
             Type type = Types.newParameterizedType(List.class, Issue.class);
             JsonAdapter<List<Issue>> adapter = moshi.adapter(type);
             InputStream inputStream = process.getInputStream();
+            //TODO check stderr for errors
             if (checkIfInputStreamIsEmpty(inputStream)) {
                 return new ArrayList<>();
             } else {
@@ -143,10 +186,55 @@ public class PylintRunner {
         }
     }
 
+    private static GeneralCommandLine getPylintCommandLine(Project project, String pathToPylint) {
+        GeneralCommandLine cmd;
+        String interpreterPath = getInterpreterPath(project);
+        if (interpreterPath == null) {
+            cmd = new GeneralCommandLine(pathToPylint);
+        } else {
+            cmd = new GeneralCommandLine(interpreterPath);
+            cmd.addParameter(pathToPylint);
+        }
+        return cmd;
+    }
+
     private static boolean checkIfInputStreamIsEmpty(InputStream inputStream) throws IOException {
         inputStream.mark(1);
         int data = inputStream.read();
         inputStream.reset();
         return data == -1;
+    }
+
+    private static String getInterpreterPath(Project project) {
+        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        if (projectSdk != null) {
+            VirtualFile homeDirectory = projectSdk.getHomeDirectory();
+            return homeDirectory == null ? null : homeDirectory.getPath();
+        }
+        return null;
+    }
+
+    private static void injectEnvironmentVariables(Project project, GeneralCommandLine cmd) {
+        String interpreterPath = getInterpreterPath(project);
+        Map<String, String> extraEnv = null;
+        Map<String, String> systemEnv = System.getenv();
+        Map<String, String> expandedCmdEnv = PySdkUtil.mergeEnvVariables(systemEnv, cmd.getEnvironment());
+        if (isVenv(interpreterPath)) {
+            String venvPath = PathUtil.getParentPath(PathUtil.getParentPath(interpreterPath));
+            extraEnv = new HashMap<>();
+            extraEnv.put(ENV_KEY_VIRTUAL_ENV, venvPath);
+            if (expandedCmdEnv.containsKey(ENV_KEY_PATH)) {
+                PythonEnvUtil.addPathToEnv(expandedCmdEnv, ENV_KEY_PATH, venvPath);
+            }
+            expandedCmdEnv.remove(ENV_KEY_PYTHONHOME);
+        }
+
+        Map<String, String> env = extraEnv != null ? PySdkUtil.mergeEnvVariables(expandedCmdEnv, extraEnv) :
+                expandedCmdEnv;
+        cmd.withEnvironment(env);
+    }
+
+    private static boolean isVenv(@Nullable String interpreterPath) {
+        return interpreterPath != null && interpreterPath.contains(File.separator + "venv" + File.separator);
     }
 }
