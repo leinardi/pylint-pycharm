@@ -19,8 +19,6 @@ package com.leinardi.pycharm.pylint.plapi;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -215,11 +213,12 @@ public class PylintRunner {
     }
 
     private static String getInterpreterPath(Project project) {
-        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (projectSdk != null) {
-            VirtualFile homeDirectory = projectSdk.getHomeDirectory();
-            return homeDirectory == null ? null : homeDirectory.getPath();
-        }
+        // I can't use this until I figure out how to install Pylint in the venv via PyCharm
+        //        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        //        if (projectSdk != null) {
+        //            VirtualFile homeDirectory = projectSdk.getHomeDirectory();
+        //            return homeDirectory == null ? null : homeDirectory.getPath();
+        //        }
         return null;
     }
 
