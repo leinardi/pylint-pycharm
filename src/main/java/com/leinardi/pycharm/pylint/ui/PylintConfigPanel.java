@@ -16,12 +16,11 @@
 
 package com.leinardi.pycharm.pylint.ui;
 
-import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.components.JBTextField;
 import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.plapi.PylintRunner;
@@ -32,30 +31,35 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.nio.file.Paths;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class PylintConfigPanel {
-    private JTextField pathToPylintTextField;
-    private JTextField pathToPylintrcFileTextField;
+    private com.intellij.openapi.ui.TextFieldWithBrowseButton pathToPylintField;
+    private com.intellij.openapi.ui.TextFieldWithBrowseButton pathToPylintrcFileField;
     private JPanel rootPanel;
-    private JButton browseButton;
     private JButton testButton;
-    private JButton browseButtonPylintrc;
     private Project project;
 
     public PylintConfigPanel(Project project) {
         this.project = project;
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
-        browseButton.setAction(new BrowseAction());
         testButton.setAction(new TestAction());
-        browseButtonPylintrc.setAction(new BrowsePylintrcAction());
-        pathToPylintTextField.setText(pylintConfigService.getPathToPylint());
-        pathToPylintrcFileTextField.setText(pylintConfigService.getPathToPylintrcFile());
+        pathToPylintField.setText(pylintConfigService.getPathToPylint());
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
+                true, false, false, false, false, false);
+        pathToPylintField.addBrowseFolderListener(
+                "",
+                PylintBundle.message("config.file.browse.tooltip"),
+                null,
+                fileChooserDescriptor,
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        pathToPylintrcFileField.setText(pylintConfigService.getPathToPylintrcFile());
+        pathToPylintrcFileField.addBrowseFolderListener(
+                "",
+                PylintBundle.message("config.file.pylintrc.browse.tooltip"),
+                null,
+                fileChooserDescriptor,
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
     }
 
     public JPanel getPanel() {
@@ -63,112 +67,17 @@ public class PylintConfigPanel {
     }
 
     public String getPathToPylint() {
-        return pathToPylintTextField.getText();
+        return pathToPylintField.getText();
     }
 
     public String getPathToPylintrcFile() {
-        return pathToPylintrcFileTextField.getText();
+        return pathToPylintrcFileField.getText();
     }
 
-    private String fileLocation(String filename) {
-        if (new File(filename).exists()) {
-            return filename;
-        }
-
-        final File projectRelativePath = projectRelativeFileOf(filename);
-        if (projectRelativePath.exists()) {
-            return projectRelativePath.getAbsolutePath();
-        }
-
-        return filename;
-    }
-
-    private File projectRelativeFileOf(final String filename) {
-        return Paths.get(new File(project.getBasePath(), filename).getAbsolutePath())
-                .normalize()
-                .toAbsolutePath()
-                .toFile();
-    }
-
-    private String trim(final String text) {
-        if (text != null) {
-            return text.trim();
-        }
-        return null;
-    }
-
-    private final class BrowseAction extends AbstractAction {
-
-        BrowseAction() {
-            putValue(Action.NAME, PylintBundle.message(
-                    "config.file.browse.text"));
-            putValue(Action.SHORT_DESCRIPTION,
-                    PylintBundle.message("config.file.browse.tooltip"));
-            putValue(Action.LONG_DESCRIPTION,
-                    PylintBundle.message("config.file.browse.tooltip"));
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final VirtualFile toSelect;
-            final String filename = trim(pathToPylintTextField.getText());
-            final String configFilePath = fileLocation(filename);
-            if (!isBlank(configFilePath)) {
-                toSelect = LocalFileSystem.getInstance().findFileByPath(configFilePath);
-            } else {
-                toSelect = project.getBaseDir();
-            }
-
-            final FileChooserDescriptor descriptor = new FileChooserDescriptor(
-                    true,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false);
-            final VirtualFile chosen = FileChooser.chooseFile(descriptor, project, toSelect);
-            if (chosen != null) {
-                final File newConfigFile = VfsUtilCore.virtualToIoFile(chosen);
-                pathToPylintTextField.setText(newConfigFile.getAbsolutePath());
-            }
-        }
-    }
-
-    private final class BrowsePylintrcAction extends AbstractAction {
-
-        BrowsePylintrcAction() {
-            putValue(Action.NAME, PylintBundle.message(
-                    "config.file.browse.text"));
-            putValue(Action.SHORT_DESCRIPTION,
-                    PylintBundle.message("config.file.pylintrc.browse.tooltip"));
-            putValue(Action.LONG_DESCRIPTION,
-                    PylintBundle.message("config.file.pylintrc.browse.tooltip"));
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final VirtualFile toSelect;
-            final String filename = trim(pathToPylintrcFileTextField.getText());
-            final String configFilePath = fileLocation(filename);
-            if (!isBlank(configFilePath)) {
-                toSelect = LocalFileSystem.getInstance().findFileByPath(configFilePath);
-            } else {
-                toSelect = project.getBaseDir();
-            }
-
-            final FileChooserDescriptor descriptor = new FileChooserDescriptor(
-                    true,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false);
-            final VirtualFile chosen = FileChooser.chooseFile(descriptor, project, toSelect);
-            if (chosen != null) {
-                final File newConfigFile = VfsUtilCore.virtualToIoFile(chosen);
-                pathToPylintrcFileTextField.setText(newConfigFile.getAbsolutePath());
-            }
-        }
+    private void createUIComponents() {
+        JBTextField optionalTextField = new JBTextField();
+        optionalTextField.getEmptyText().setText(PylintBundle.message("config.optional"));
+        pathToPylintrcFileField = new TextFieldWithBrowseButton(optionalTextField);
     }
 
     private final class TestAction extends AbstractAction {
