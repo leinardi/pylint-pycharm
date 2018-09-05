@@ -1,5 +1,5 @@
 **[0.9.0] - 2018-09-04**
- - Info: I am aware of the venv import error but for now I only have a partial solution. If you want to help or just get updates on the issue, click here: https://github.com/leinardi/pylint-pycharm/issues/7
+ - Info: I am aware of the venv import error but for now I only have a partial solution. If you want to help or just get updates on the issue, click [here](https://github.com/leinardi/pylint-pycharm/issues/7).
  - New: Showing better info to the user if Pylint is missing
  - New: Added ability to optionally specify a pylintrc
  - New: Added ability to optionally specify Pylint arguments
