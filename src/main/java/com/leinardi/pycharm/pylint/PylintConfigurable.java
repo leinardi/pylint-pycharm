@@ -66,8 +66,9 @@ public class PylintConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        boolean result = !configPanel.getPathToPylint().equals(pylintConfigService.getPathToPylint())
-                || !configPanel.getPathToPylintrcFile().equals(pylintConfigService.getPathToPylintrcFile());
+        boolean result = !configPanel.getPylintPath().equals(pylintConfigService.getPylintPath())
+                || !configPanel.getPylintrcPath().equals(pylintConfigService.getPylintrcPath())
+                || !configPanel.getPylintArguments().equals(pylintConfigService.getPylintArguments());
         if (LOG.isDebugEnabled()) {
             LOG.debug("Has config changed? " + result);
         }
@@ -76,8 +77,9 @@ public class PylintConfigurable implements Configurable {
 
     @Override
     public void apply() {
-        pylintConfigService.setPathToPylint(configPanel.getPathToPylint());
-        pylintConfigService.setPathToPylintrcFile(configPanel.getPathToPylintrcFile());
+        pylintConfigService.setPylintPath(configPanel.getPylintPath());
+        pylintConfigService.setPylintrcPath(configPanel.getPylintrcPath());
+        pylintConfigService.setPylintArguments(configPanel.getPylintArguments());
     }
 
     @Override
