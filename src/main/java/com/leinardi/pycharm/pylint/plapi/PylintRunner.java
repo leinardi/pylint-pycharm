@@ -19,8 +19,7 @@ package com.leinardi.pycharm.pylint.plapi;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PathUtil;
@@ -89,7 +88,7 @@ public class PylintRunner {
         if (pylintConfigService == null) {
             throw new IllegalStateException("PylintConfigService is null");
         }
-        return isPathToPylintValid(pylintConfigService.getPathToPylint(), project);
+        return isPathToPylintValid(pylintConfigService.getPylintPath(), project);
     }
 
     private static String getPylintrcFile(Project project, String pathToPylintrcFile) throws PylintPluginException {
@@ -140,12 +139,12 @@ public class PylintRunner {
             throw new PylintPluginException("Illegal state: pylintConfigService is null");
         }
 
-        String pathToPylint = pylintConfigService.getPathToPylint();
+        String pathToPylint = pylintConfigService.getPylintPath();
         if (pathToPylint.isEmpty()) {
             throw new PylintToolException("Path to Pylint executable not set (check Plugin Settings)");
         }
 
-        String pathToPylintrcFile = getPylintrcFile(project, pylintConfigService.getPathToPylintrcFile());
+        String pathToPylintrcFile = getPylintrcFile(project, pylintConfigService.getPylintrcPath());
 
         GeneralCommandLine cmd = getPylintCommandLine(project, pathToPylint);
 
@@ -159,6 +158,14 @@ public class PylintRunner {
             cmd.addParameter("--rcfile");
             cmd.addParameter(pathToPylintrcFile);
         }
+
+        String[] args = pylintConfigService.getPylintArguments().split(" ", -1);
+        for (String arg : args) {
+            if (!StringUtil.isEmpty(arg)) {
+                cmd.addParameter(arg);
+            }
+        }
+
         for (String file : filesToScan) {
             cmd.addParameter(file);
         }
@@ -206,11 +213,12 @@ public class PylintRunner {
     }
 
     private static String getInterpreterPath(Project project) {
-        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (projectSdk != null) {
-            VirtualFile homeDirectory = projectSdk.getHomeDirectory();
-            return homeDirectory == null ? null : homeDirectory.getPath();
-        }
+        // I can't use this until I figure out how to install Pylint in the venv via PyCharm
+        //        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        //        if (projectSdk != null) {
+        //            VirtualFile homeDirectory = projectSdk.getHomeDirectory();
+        //            return homeDirectory == null ? null : homeDirectory.getPath();
+        //        }
         return null;
     }
 
