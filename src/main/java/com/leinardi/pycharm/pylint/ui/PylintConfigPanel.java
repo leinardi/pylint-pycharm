@@ -44,8 +44,11 @@ public class PylintConfigPanel {
     public PylintConfigPanel(Project project) {
         this.project = project;
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
+        if (pylintConfigService == null) {
+            throw new IllegalStateException("PylintConfigService is null");
+        }
         testButton.setAction(new TestAction());
-        pylintPathField.setText(pylintConfigService.getPylintPath());
+        pylintPathField.setText(pylintConfigService.getCustomPylintPath());
         FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
                 true, false, false, false, false, false);
         pylintPathField.addBrowseFolderListener(
@@ -70,7 +73,15 @@ public class PylintConfigPanel {
     }
 
     public String getPylintPath() {
-        return pylintPathField.getText();
+        return getPylintPath(false);
+    }
+
+    public String getPylintPath(boolean autodetect) {
+        String path = pylintPathField.getText();
+        if (path.isEmpty() && autodetect) {
+            return PylintRunner.getPylintPath(project, false);
+        }
+        return path;
     }
 
     public String getPylintrcPath() {
@@ -82,6 +93,10 @@ public class PylintConfigPanel {
     }
 
     private void createUIComponents() {
+        JBTextField autodetectTextField = new JBTextField();
+        autodetectTextField.getEmptyText()
+                .setText(PylintBundle.message("config.auto-detect", PylintRunner.getPylintPath(project, false)));
+        pylintPathField = new TextFieldWithBrowseButton(autodetectTextField);
         JBTextField optionalTextField = new JBTextField();
         optionalTextField.getEmptyText().setText(PylintBundle.message("config.optional"));
         pylintrcPathField = new TextFieldWithBrowseButton(optionalTextField);
@@ -96,8 +111,8 @@ public class PylintConfigPanel {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            String pathToPylint = getPylintPath();
-            if (PylintRunner.isPathToPylintValid(pathToPylint, project)) {
+            String pathToPylint = getPylintPath(true);
+            if (PylintRunner.isPylintPathValid(pathToPylint, project)) {
                 testButton.setIcon(Icons.icon("/general/inspectionsOK.png"));
                 Notifications.showInfo(
                         project,

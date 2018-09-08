@@ -22,30 +22,29 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(name = "PylintConfigService", storages = {@Storage("pylint.xml")})
 public class PylintConfigService implements PersistentStateComponent<PylintConfigService> {
     public PylintConfigService() {
-        pathToPylint = PylintRunner.tryToFindPylintPath();
+        customPylintPath = "";
         pylintArguments = "";
         pylintrcPath = "";
         scanBeforeCheckin = true;
     }
 
-    private String pathToPylint;
+    private String customPylintPath;
     private String pylintrcPath;
     private String pylintArguments;
     private boolean scanBeforeCheckin;
 
-    public String getPylintPath() {
-        return pathToPylint;
+    public String getCustomPylintPath() {
+        return customPylintPath;
     }
 
-    public void setPylintPath(String pathToPylint) {
-        this.pathToPylint = pathToPylint;
+    public void setCustomPylintPath(String pathToPylint) {
+        this.customPylintPath = pathToPylint;
     }
 
     public String getPylintrcPath() {
