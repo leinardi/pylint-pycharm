@@ -2,6 +2,7 @@
 - Fix #7: Support linting inside current Virtualenv
 - New: Improved Pylint auto-detection
 - New: Settings button now opens File | Settings | Pylint
+- New: Minimum compatibility version raised to 163.15529
 
 **[0.9.0] 2018-09-04**
  - Info: I am aware of the venv import error but for now I only have a partial solution. If you want to help or just get updates on the issue, click [here](https://github.com/leinardi/pylint-pycharm/issues/7).
