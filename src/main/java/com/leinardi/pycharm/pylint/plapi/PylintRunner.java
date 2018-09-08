@@ -127,7 +127,10 @@ public class PylintRunner {
     public static boolean checkPylintAvailable(Project project, boolean showNotifications) {
         Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
         if (projectSdk == null) {
-            LOG.debug("Project interpreter not set");
+            if (showNotifications) {
+                Notifications.showError(project, "No Python interpreter configured for the project.");
+            }
+            return false;
         } else if (showNotifications) {
             PyPackageManager pyPackageManager = PyPackageManager.getInstance(projectSdk);
             List<PyPackage> packages = pyPackageManager.getPackages();
