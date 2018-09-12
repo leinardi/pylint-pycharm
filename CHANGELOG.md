@@ -1,6 +1,8 @@
-**[0.10.0] 2018-09-08**
+**[0.10.0] 2018-09-12**
 - Fix #7: Support linting inside current Virtualenv
+- Fix #19: Don't show the 'syntax-error' message for real-time scan
 - New: Improved Pylint auto-detection
+- New: Option to install Pylint if missing
 - New: Settings button now opens File | Settings | Pylint
 - New: Minimum compatibility version raised to 163.15529
 
