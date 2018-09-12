@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -122,6 +123,18 @@ public final class Notifications {
                 .notify(project);
     }
 
+    public static void showNoPythonInterpreter(Project project) {
+        Notification notification = BALLOON_GROUP
+                .createNotification(
+                        TITLE,
+                        PylintBundle.message("plugin.notification.no-python-interpreter.content"),
+                        ERROR,
+                        URL_OPENING_LISTENER);
+        notification
+                .addAction(new ConfigurePythonInterpreterAction(project, notification))
+                .notify(project);
+    }
+
     @NotNull
     private static String messageFor(final Throwable t) {
         if (t.getCause() != null) {
@@ -152,6 +165,24 @@ public final class Notifications {
             new Settings().actionPerformed(event);
             notification.expire();
         }
+    }
+
+    private static class ConfigurePythonInterpreterAction extends AnAction {
+        private Project project;
+        private Notification notification;
+
+        ConfigurePythonInterpreterAction(Project project, Notification notification) {
+            super(PylintBundle.message("plugin.notification.action.configure-python-interpreter"));
+            this.project = project;
+            this.notification = notification;
+        }
+
+        @Override
+        public void actionPerformed(AnActionEvent ignored) {
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, "Project Interpreter");
+            notification.expire();
+        }
+
     }
 
     private static class InstallPylintAction extends AnAction {
