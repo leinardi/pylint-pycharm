@@ -128,7 +128,7 @@ public class PylintRunner {
         Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
         if (projectSdk == null) {
             if (showNotifications) {
-                Notifications.showError(project, "No Python interpreter configured for the project.");
+                Notifications.showNoPythonInterpreter(project);
             }
             return false;
         } else if (showNotifications) {
