@@ -72,7 +72,7 @@ public class PylintInspection extends LocalInspectionTool {
 
         final PylintPlugin plugin = plugin(manager.getProject());
 
-        if (!PylintRunner.isPylintAvailable(plugin.getProject())) {
+        if (!PylintRunner.checkPylintAvailable(plugin.getProject())) {
             LOG.debug("Scan failed: Pylint not available.");
             return NO_PROBLEMS_FOUND;
         }
