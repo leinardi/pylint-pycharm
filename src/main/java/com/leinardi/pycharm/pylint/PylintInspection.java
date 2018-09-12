@@ -48,6 +48,7 @@ public class PylintInspection extends LocalInspectionTool {
 
     private static final Logger LOG = Logger.getInstance(PylintInspection.class);
     private static final List<Problem> NO_PROBLEMS_FOUND = Collections.emptyList();
+    private static final String ERROR_MESSAGE_ID_SYNTAX_ERROR = "E0001";
 
     private PylintPlugin plugin(final Project project) {
         final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
@@ -85,6 +86,8 @@ public class PylintInspection extends LocalInspectionTool {
             }
             ScanFiles scanFiles = new ScanFiles(plugin, Collections.singletonList(psiFile.getVirtualFile()));
             Map<PsiFile, List<Problem>> map = scanFiles.call();
+            map.values().forEach(problems -> problems.removeIf(problem ->
+                    problem.getMessageId().equals(ERROR_MESSAGE_ID_SYNTAX_ERROR)));
             if (map.isEmpty()) {
                 return NO_PROBLEMS_FOUND;
             }

@@ -14,8 +14,6 @@ helps enforcing a coding standard and sniffs for some code smells
 ![pylint plugin screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-pycharm.png)
 
 ## Installation steps
-The plugin requires [pylint](https://github.com/PyCQA/pylint) to be installed.
-
 1. In the **Settings/Preferences** dialog (<kbd>CTRL</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>), click **Plugins**. The [Plugins page](https://www.jetbrains.com/help/pycharm/plugins-settings.html) opens.
 2. Click **Browse repositories**.
 3. In the [Browse Repositories dialog](https://www.jetbrains.com/help/pycharm/browse-repositories-dialog.html) that opens, right-click on the plugin named **Pylint** and select **Download and Install**.
