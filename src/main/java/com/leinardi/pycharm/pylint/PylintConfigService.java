@@ -28,19 +28,39 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "PylintConfigService", storages = {@Storage("pylint.xml")})
 public class PylintConfigService implements PersistentStateComponent<PylintConfigService> {
     public PylintConfigService() {
-        pathToPylint = PylintBundle.message("config.pylint.path.default");
+        customPylintPath = "";
+        pylintArguments = "";
+        pylintrcPath = "";
         scanBeforeCheckin = true;
     }
 
-    private String pathToPylint;
+    private String customPylintPath;
+    private String pylintrcPath;
+    private String pylintArguments;
     private boolean scanBeforeCheckin;
 
-    public String getPathToPylint() {
-        return pathToPylint;
+    public String getCustomPylintPath() {
+        return customPylintPath;
     }
 
-    public void setPathToPylint(String pathToPylint) {
-        this.pathToPylint = pathToPylint;
+    public void setCustomPylintPath(String pathToPylint) {
+        this.customPylintPath = pathToPylint;
+    }
+
+    public String getPylintrcPath() {
+        return pylintrcPath;
+    }
+
+    public void setPylintrcPath(String pathToPylintrcFile) {
+        this.pylintrcPath = pathToPylintrcFile;
+    }
+
+    public String getPylintArguments() {
+        return pylintArguments;
+    }
+
+    public void setPylintArguments(String pylintArguments) {
+        this.pylintArguments = pylintArguments;
     }
 
     public boolean isScanBeforeCheckin() {

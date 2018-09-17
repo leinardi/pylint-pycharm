@@ -40,7 +40,7 @@ public class Settings extends BaseAction {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }
 
-        ShowSettingsUtil.getInstance().editConfigurable(project, new PylintConfigurable(project));
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, PylintConfigurable.class);
     }
 
 }

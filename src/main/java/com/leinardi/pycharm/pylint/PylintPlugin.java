@@ -101,7 +101,7 @@ public final class PylintPlugin implements ProjectComponent {
 
     @Override
     public void projectClosed() {
-        LOG.debug("Project closed; invalidating checkers.");
+        LOG.debug("Project closed.");
     }
 
     @Override

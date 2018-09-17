@@ -27,6 +27,7 @@ import com.leinardi.pycharm.pylint.checker.Problem;
 import com.leinardi.pycharm.pylint.checker.ScanFiles;
 import com.leinardi.pycharm.pylint.checker.ScannableFile;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
+import com.leinardi.pycharm.pylint.plapi.PylintRunner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +48,7 @@ public class PylintInspection extends LocalInspectionTool {
 
     private static final Logger LOG = Logger.getInstance(PylintInspection.class);
     private static final List<Problem> NO_PROBLEMS_FOUND = Collections.emptyList();
+    private static final String ERROR_MESSAGE_ID_SYNTAX_ERROR = "E0001";
 
     private PylintPlugin plugin(final Project project) {
         final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
@@ -71,6 +73,11 @@ public class PylintInspection extends LocalInspectionTool {
 
         final PylintPlugin plugin = plugin(manager.getProject());
 
+        if (!PylintRunner.checkPylintAvailable(plugin.getProject())) {
+            LOG.debug("Scan failed: Pylint not available.");
+            return NO_PROBLEMS_FOUND;
+        }
+
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
             scannableFiles.addAll(ScannableFile.createAndValidate(singletonList(psiFile), plugin));
@@ -79,6 +86,8 @@ public class PylintInspection extends LocalInspectionTool {
             }
             ScanFiles scanFiles = new ScanFiles(plugin, Collections.singletonList(psiFile.getVirtualFile()));
             Map<PsiFile, List<Problem>> map = scanFiles.call();
+            map.values().forEach(problems -> problems.removeIf(problem ->
+                    problem.getMessageId().equals(ERROR_MESSAGE_ID_SYNTAX_ERROR)));
             if (map.isEmpty()) {
                 return NO_PROBLEMS_FOUND;
             }

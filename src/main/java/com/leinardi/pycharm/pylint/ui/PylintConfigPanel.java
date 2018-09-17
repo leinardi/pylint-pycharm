@@ -16,12 +16,11 @@
 
 package com.leinardi.pycharm.pylint.ui;
 
-import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.components.JBTextField;
 import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.plapi.PylintRunner;
@@ -32,99 +31,75 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.nio.file.Paths;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class PylintConfigPanel {
-    private JTextField pathToPylintTextField;
     private JPanel rootPanel;
-    private JButton browseButton;
     private JButton testButton;
+    private com.intellij.openapi.ui.TextFieldWithBrowseButton pylintPathField;
+    private com.intellij.openapi.ui.TextFieldWithBrowseButton pylintrcPathField;
+    private JBTextField argumentsField;
     private Project project;
 
     public PylintConfigPanel(Project project) {
         this.project = project;
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
-        browseButton.setAction(new BrowseAction());
+        if (pylintConfigService == null) {
+            throw new IllegalStateException("PylintConfigService is null");
+        }
         testButton.setAction(new TestAction());
-        pathToPylintTextField.setText(pylintConfigService.getPathToPylint());
+        pylintPathField.setText(pylintConfigService.getCustomPylintPath());
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
+                true, false, false, false, false, false);
+        pylintPathField.addBrowseFolderListener(
+                "",
+                PylintBundle.message("config.pylint.path.tooltip"),
+                null,
+                fileChooserDescriptor,
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        pylintrcPathField.setText(pylintConfigService.getPylintrcPath());
+        pylintrcPathField.addBrowseFolderListener(
+                "",
+                PylintBundle.message("config.pylintrc.path.tooltip"),
+                null,
+                fileChooserDescriptor,
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        argumentsField.setText(pylintConfigService.getPylintArguments());
+        argumentsField.getEmptyText().setText(PylintBundle.message("config.optional"));
     }
 
     public JPanel getPanel() {
         return rootPanel;
     }
 
-    public String getPathToPylint() {
-        return pathToPylintTextField.getText();
+    public String getPylintPath() {
+        return getPylintPath(false);
     }
 
-    private String fileLocation() {
-        final String filename = trim(pathToPylintTextField.getText());
-
-        if (new File(filename).exists()) {
-            return filename;
+    public String getPylintPath(boolean autodetect) {
+        String path = pylintPathField.getText();
+        if (path.isEmpty() && autodetect) {
+            return PylintRunner.getPylintPath(project, false);
         }
-
-        final File projectRelativePath = projectRelativeFileOf(filename);
-        if (projectRelativePath.exists()) {
-            return projectRelativePath.getAbsolutePath();
-        }
-
-        return filename;
+        return path;
     }
 
-    private File projectRelativeFileOf(final String filename) {
-        return Paths.get(new File(project.getBasePath(), filename).getAbsolutePath())
-                .normalize()
-                .toAbsolutePath()
-                .toFile();
+    public String getPylintrcPath() {
+        return pylintrcPathField.getText();
     }
 
-    private String trim(final String text) {
-        if (text != null) {
-            return text.trim();
-        }
-        return null;
+    public String getPylintArguments() {
+        return argumentsField.getText();
     }
 
-    private final class BrowseAction extends AbstractAction {
-
-        BrowseAction() {
-            putValue(Action.NAME, PylintBundle.message(
-                    "config.file.browse.text"));
-            putValue(Action.SHORT_DESCRIPTION,
-                    PylintBundle.message("config.file.browse.tooltip"));
-            putValue(Action.LONG_DESCRIPTION,
-                    PylintBundle.message("config.file.browse.tooltip"));
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            final VirtualFile toSelect;
-            final String configFilePath = fileLocation();
-            if (!isBlank(configFilePath)) {
-                toSelect = LocalFileSystem.getInstance().findFileByPath(configFilePath);
-            } else {
-                toSelect = project.getBaseDir();
-            }
-
-            final FileChooserDescriptor descriptor = new FileChooserDescriptor(
-                    true,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false);
-            final VirtualFile chosen = FileChooser.chooseFile(descriptor, project, toSelect);
-            if (chosen != null) {
-                final File newConfigFile = VfsUtilCore.virtualToIoFile(chosen);
-                pathToPylintTextField.setText(newConfigFile.getAbsolutePath());
-            }
-        }
+    private void createUIComponents() {
+        JBTextField autodetectTextField = new JBTextField();
+        autodetectTextField.getEmptyText()
+                .setText(PylintBundle.message("config.auto-detect", PylintRunner.getPylintPath(project, false)));
+        pylintPathField = new TextFieldWithBrowseButton(autodetectTextField);
+        JBTextField optionalTextField = new JBTextField();
+        optionalTextField.getEmptyText().setText(PylintBundle.message("config.optional"));
+        pylintrcPathField = new TextFieldWithBrowseButton(optionalTextField);
     }
 
     private final class TestAction extends AbstractAction {
@@ -136,8 +111,8 @@ public class PylintConfigPanel {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            String pathToPylint = getPathToPylint();
-            if (PylintRunner.isPathToPylintValid(pathToPylint)) {
+            String pathToPylint = getPylintPath(true);
+            if (PylintRunner.isPylintPathValid(pathToPylint, project)) {
                 testButton.setIcon(Icons.icon("/general/inspectionsOK.png"));
                 Notifications.showInfo(
                         project,
