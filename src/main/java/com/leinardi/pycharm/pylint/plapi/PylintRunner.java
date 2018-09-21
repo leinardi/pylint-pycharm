@@ -70,7 +70,8 @@ public class PylintRunner {
     }
 
     public static boolean isPylintPathValid(String pylintPath, Project project) {
-        if (!pylintPath.startsWith(File.separator)) {
+        String absolutePath = new File(pylintPath).getAbsolutePath();
+        if (!absolutePath.equals(pylintPath)) {
             pylintPath = project.getBasePath() + File.separator + pylintPath;
         }
         VirtualFile pylintFile = LocalFileSystem.getInstance().findFileByPath(pylintPath);
@@ -155,9 +156,10 @@ public class PylintRunner {
     }
 
     private static String getPylintrcFile(Project project, String pylintrcPath) throws PylintPluginException {
+        String absolutePath = new File(pylintrcPath).getAbsolutePath();
         if (pylintrcPath.isEmpty()) {
             return "";
-        } else if (!pylintrcPath.startsWith(File.separator)) {
+        } else if (!absolutePath.equals(pylintrcPath)) {
             pylintrcPath = project.getBasePath() + File.separator + pylintrcPath;
         }
 
