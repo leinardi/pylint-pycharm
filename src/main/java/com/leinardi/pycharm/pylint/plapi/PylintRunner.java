@@ -156,9 +156,10 @@ public class PylintRunner {
     }
 
     private static String getPylintrcFile(Project project, String pylintrcPath) throws PylintPluginException {
+        String absolutePath = new File(pylintrcPath).getAbsolutePath();
         if (pylintrcPath.isEmpty()) {
             return "";
-        } else if (!pylintrcPath.startsWith(File.separator)) {
+        } else if (!absolutePath.equals(pylintrcPath)) {
             pylintrcPath = project.getBasePath() + File.separator + pylintrcPath;
         }
 
