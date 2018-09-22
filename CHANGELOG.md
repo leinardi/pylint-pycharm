@@ -1,3 +1,7 @@
+**[0.10.1] 2018-09-21**
+ - Fix #22: PyLint absolute path not working on Windows
+ - Fix #24: PyLint auto-detection not working on Windows
+
 **[0.10.0] 2018-09-12**
 - Fix #7: Support linting inside current Virtualenv
 - Fix #19: Don't show the 'syntax-error' message for real-time scan
