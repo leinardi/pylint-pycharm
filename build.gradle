@@ -32,13 +32,13 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.intellij' version '0.3.7'
+    id 'org.jetbrains.intellij' version '0.3.11'
     id 'net.ltgt.errorprone' version '0.0.16'
     id 'idea'
     id 'java'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.42'
+    id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.49'
 }
 
 checkstyle {
@@ -106,7 +106,7 @@ dependencies {
     if (hasPyCharm) {
         compileOnly name: 'pycharm'
     }
-    compile 'com.squareup.moshi:moshi:1.6.0'
+    compile 'com.squareup.moshi:moshi:1.7.0'
     errorprone 'com.google.errorprone:error_prone_core:2.3.1'
 }
 
