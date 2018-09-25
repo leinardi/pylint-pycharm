@@ -91,7 +91,7 @@ patchPluginXml {
 }
 
 publishPlugin {
-    def publishPassword = jetbrainsPublishPassword
+    def publishPassword = project.hasProperty('jetbrainsPublishPassword') ? jetbrainsPublishPassword : ""
     username publishUsername
     password publishPassword
     channels publishChannels
