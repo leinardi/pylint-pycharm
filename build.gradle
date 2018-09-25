@@ -90,6 +90,12 @@ patchPluginXml {
     changeNotes getChangelogHtml()
 }
 
+publishPlugin {
+    def publishPassword = jetbrainsPublishPassword
+    username publishUsername
+    password publishPassword
+    channels publishChannels
+}
 
 repositories {
     jcenter()
