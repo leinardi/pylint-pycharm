@@ -34,6 +34,7 @@ import com.leinardi.pycharm.pylint.PylintConfigService;
 import com.leinardi.pycharm.pylint.exception.PylintPluginException;
 import com.leinardi.pycharm.pylint.exception.PylintPluginParseException;
 import com.leinardi.pycharm.pylint.exception.PylintToolException;
+import com.leinardi.pycharm.pylint.util.FileTypes;
 import com.leinardi.pycharm.pylint.util.Notifications;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -93,6 +94,7 @@ public class PylintRunner {
             String error = new BufferedReader(new InputStreamReader(process.getErrorStream(), UTF_8))
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
+                LOG.info("Command Line string: " + cmd.getCommandLineString());
                 LOG.error("Error while checking Pylint path: " + error);
             }
             String output = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))
@@ -101,12 +103,14 @@ public class PylintRunner {
                 LOG.debug("Pylint path check output: " + output);
             }
             if (process.exitValue() != 0) {
+                LOG.info("Command Line string: " + cmd.getCommandLineString());
                 LOG.error("Pylint path check process.exitValue: " + process.exitValue());
                 return false;
             } else {
                 return true;
             }
         } catch (ExecutionException | InterruptedException e) {
+            LOG.info("Command Line string: " + cmd.getCommandLineString());
             LOG.error("Error while checking Pylint path", e);
             return false;
         }
@@ -206,9 +210,11 @@ public class PylintRunner {
             String error = new BufferedReader(new InputStreamReader(process.getErrorStream(), UTF_8))
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
+                LOG.info("Command Line string: " + cmd.getCommandLineString());
                 LOG.error("Error while detecting Pylint path: " + error);
             }
             if (process.exitValue() != 0 || !path.isPresent()) {
+                LOG.info("Command Line string: " + cmd.getCommandLineString());
                 LOG.error("Pylint path detect process.exitValue: " + process.exitValue());
                 return "";
             }
@@ -277,22 +283,25 @@ public class PylintRunner {
                 return adapter.fromJson(Okio.buffer(Okio.source(inputStream)));
             }
         } catch (InterruptedIOException e) {
+            LOG.info("Command Line string: " + cmd.getCommandLineString());
             throw e;
         } catch (IOException e) {
+            LOG.info("Command Line string: " + cmd.getCommandLineString());
             throw new PylintPluginParseException(e.getMessage(), e);
         } catch (ExecutionException e) {
+            LOG.info("Command Line string: " + cmd.getCommandLineString());
             throw new PylintToolException("Error creating Pylint process", e);
         }
     }
 
-    private static GeneralCommandLine getPylintCommandLine(Project project, String pathToPylint) {
+    private static GeneralCommandLine getPylintCommandLine(Project project, String pylintPath) {
         GeneralCommandLine cmd;
         VirtualFile interpreterFile = getInterpreterFile(project);
-        if (interpreterFile == null) {
-            cmd = new GeneralCommandLine(pathToPylint);
+        if (interpreterFile == null || FileTypes.isWindowsExecutable(pylintPath)) {
+            cmd = new GeneralCommandLine(pylintPath);
         } else {
             cmd = new GeneralCommandLine(interpreterFile.getPath());
-            cmd.addParameter(pathToPylint);
+            cmd.addParameter(pylintPath);
         }
         return cmd;
     }
