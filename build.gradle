@@ -114,7 +114,7 @@ def getChangelogHtml() {
     Parser parser = Parser.builder().build()
     Node document = parser.parseReader(rootProject.file('CHANGELOG.md').newReader())
     HtmlRenderer renderer = HtmlRenderer.builder().build()
-    renderer.render(document)
+    renderer.render(document.firstChild.next)
 }
 
 check.dependsOn(verifyPlugin)

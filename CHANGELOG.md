@@ -1,3 +1,6 @@
+**[0.10.2] 2018-09-25**
+ - Fix #26: SyntaxError: Non-UTF-8 code starting with '\x90' when interpreter is set on Windows
+
 **[0.10.1] 2018-09-21**
  - Fix #22: PyLint absolute path not working on Windows
  - Fix #24: PyLint auto-detection not working on Windows
