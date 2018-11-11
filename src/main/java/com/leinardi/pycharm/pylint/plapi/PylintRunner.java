@@ -70,6 +70,7 @@ public class PylintRunner {
     private static final String ENV_KEY_PATH = "PATH";
     private static final String ENV_KEY_PYTHONHOME = "PYTHONHOME";
     private static final String WHICH_EXECUTABLE_NAME = OS.isWindows() ? "where" : "which";
+    private static final String ACTIVATE_FILE_NAME = OS.isWindows() ? "activate.bat" : "activate";
 
     private PylintRunner() {
     }
@@ -343,8 +344,7 @@ public class PylintRunner {
     }
 
     private static boolean isVenv(@Nullable VirtualFile interpreterFile) {
-        return interpreterFile != null && interpreterFile.getPath()
-                .contains(File.separator + "venv" + File.separator);
+        return interpreterFile != null && interpreterFile.getParent().findChild(ACTIVATE_FILE_NAME) != null;
     }
 
 }
