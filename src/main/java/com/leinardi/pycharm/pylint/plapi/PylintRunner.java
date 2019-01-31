@@ -95,7 +95,7 @@ public class PylintRunner {
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Error while checking Pylint path: " + error);
+                LOG.info("Messages while checking Pylint path: " + error);
             }
             String output = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))
                     .lines().collect(Collectors.joining("\n"));
@@ -211,7 +211,7 @@ public class PylintRunner {
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Error while detecting Pylint path: " + error);
+                LOG.info("Messages while checking Pylint path: " + error);
             }
             if (process.exitValue() != 0 || !path.isPresent()) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
