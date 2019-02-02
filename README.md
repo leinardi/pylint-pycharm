@@ -36,6 +36,13 @@ the executable.
 
 ![plugin settings screenshot](https://github.com/leinardi/pylint-pycharm/blob/master/art/pylint-settings.png)
 
+### Real-time inspection disabled by default
+The plugin real-time inspection is disabled by default as numerous users find running `mix credo` in the background has 
+a negative impact on their system performance.  If you like to try enabling the annotation, you can turn it on:
+
+1. Preferences > Editor > Inspections > Pylint
+2. Check "Pylint real-time scan"
+
 ### Inspection severity
 
 By default, Pylint message severity is set to Warning. It is possible to change the severity level

@@ -1,4 +1,6 @@
 **[0.11.0] 2019-01-02**
+ - PyLint real-time inspection disabled by default as numerous users find running it in the background has a negative
+   impact on their system performance
  - Fix #29: Implementing a better virtualenv detection
 
 **[0.10.2] 2018-09-25**
