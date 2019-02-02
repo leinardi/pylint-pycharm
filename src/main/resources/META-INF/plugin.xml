@@ -51,7 +51,7 @@
                          key="inspection.display-name"
                          groupKey="inspection.group"
                          level="WARNING"
-                         enabledByDefault="true"/>
+                         enabledByDefault="false"/>
 
         <checkinHandlerFactory id="CheckStyleIDEACheckInHandlerFactory"
                                implementation="com.leinardi.pycharm.pylint.handlers.ScanFilesBeforeCheckinHandlerFactory"/>

@@ -70,6 +70,7 @@ public class PylintRunner {
     private static final String ENV_KEY_PATH = "PATH";
     private static final String ENV_KEY_PYTHONHOME = "PYTHONHOME";
     private static final String WHICH_EXECUTABLE_NAME = OS.isWindows() ? "where" : "which";
+    private static final String ACTIVATE_FILE_NAME = OS.isWindows() ? "activate.bat" : "activate";
 
     private PylintRunner() {
     }
@@ -95,7 +96,7 @@ public class PylintRunner {
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Error while checking Pylint path: " + error);
+                LOG.info("Messages while checking Pylint path: " + error);
             }
             String output = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))
                     .lines().collect(Collectors.joining("\n"));
@@ -211,7 +212,7 @@ public class PylintRunner {
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Error while detecting Pylint path: " + error);
+                LOG.info("Messages while checking Pylint path: " + error);
             }
             if (process.exitValue() != 0 || !path.isPresent()) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
@@ -343,8 +344,7 @@ public class PylintRunner {
     }
 
     private static boolean isVenv(@Nullable VirtualFile interpreterFile) {
-        return interpreterFile != null && interpreterFile.getPath()
-                .contains(File.separator + "venv" + File.separator);
+        return interpreterFile != null && interpreterFile.getParent().findChild(ACTIVATE_FILE_NAME) != null;
     }
 
 }
