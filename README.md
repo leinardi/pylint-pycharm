@@ -2,7 +2,6 @@
 [![GitHub (pre-)release](https://img.shields.io/github/release/leinardi/pylint-pycharm/all.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/releases)
 [![Travis](https://img.shields.io/travis/leinardi/pylint-pycharm/master.svg?style=plastic)](https://travis-ci.org/leinardi/pylint-pycharm)
 [![GitHub license](https://img.shields.io/github/license/leinardi/pylint-pycharm.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/blob/master/LICENSE) 
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/leinardi/pylint-pycharm.svg?columns=all&style=plastic)](https://waffle.io/leinardi/pylint-pycharm) 
 [![Stars](https://img.shields.io/github/stars/leinardi/pylint-pycharm.svg?style=social&label=Stars)](https://github.com/leinardi/pylint-pycharm/stargazers) 
 
 This plugin provides both real-time and on-demand scanning of Python files with Pylint from within PyCharm/IDEA.
@@ -80,7 +79,7 @@ feel free to open an issue on the [issue tracker](https://github.com/leinardi/py
 you can always leave a comment on the [Plugin Repository page](https://plugins.jetbrains.com/plugin/11084-pylint).
 
 ## Acknowledgements
-_If I have seen further it is by standing on the sholders of Giants - Isaac Newton_
+_If I have seen further it is by standing on the shoulders of Giants - Isaac Newton_
 
 A huge thank you to the project [CheckStyle-IDEA](https://github.com/jshiell/checkstyle-idea), 
 which code and architecture I have heavily used when developing this plugin.

@@ -96,7 +96,7 @@ public class PylintRunner {
                     .lines().collect(Collectors.joining("\n"));
             if (!StringUtil.isEmpty(error)) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.info("Messages while checking Pylint path: " + error);
+                LOG.warn("Messages while checking Pylint path: " + error);
             }
             String output = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))
                     .lines().collect(Collectors.joining("\n"));
@@ -105,7 +105,7 @@ public class PylintRunner {
             }
             if (process.exitValue() != 0) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Pylint path check process.exitValue: " + process.exitValue());
+                LOG.warn("Pylint path check process.exitValue: " + process.exitValue());
                 return false;
             } else {
                 return true;
@@ -153,7 +153,9 @@ public class PylintRunner {
 
     public static boolean checkPylintAvailable(Project project, boolean showNotifications) {
         Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (projectSdk == null) {
+        if (projectSdk == null
+                || projectSdk.getHomeDirectory() == null
+                || !projectSdk.getHomeDirectory().exists()) {
             if (showNotifications) {
                 Notifications.showNoPythonInterpreter(project);
             }
