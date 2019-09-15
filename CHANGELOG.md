@@ -1,4 +1,4 @@
-**[0.11.1] next release**
+**[0.11.1] 2019-09-15**
  - New: Improved error handling
 
 **[0.11.0] 2019-01-02**
