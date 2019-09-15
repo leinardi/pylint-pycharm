@@ -1,3 +1,6 @@
+**[0.11.1] next release**
+ - New: Improved error handling
+
 **[0.11.0] 2019-01-02**
  - PyLint real-time inspection disabled by default as numerous users find running it in the background has a negative
    impact on their system performance
