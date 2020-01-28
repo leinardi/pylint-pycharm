@@ -18,6 +18,7 @@ package com.leinardi.pycharm.pylint.plapi;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.configurations.ParametersList;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -260,12 +261,8 @@ public class PylintRunner {
             cmd.addParameter(pylintrcPath);
         }
 
-        String[] args = pylintConfigService.getPylintArguments().split(" ", -1);
-        for (String arg : args) {
-            if (!StringUtil.isEmpty(arg)) {
-                cmd.addParameter(arg);
-            }
-        }
+        ParametersList parametersList = cmd.getParametersList();
+        parametersList.addParametersString(pylintConfigService.getPylintArguments());
 
         for (String file : filesToScan) {
             cmd.addParameter(file);
