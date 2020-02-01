@@ -1,3 +1,6 @@
+**[0.11.2] 2020-02-01**
+ - Fix #42: no linting when using `--init-hook` in the parameter field
+
 **[0.11.1] 2019-09-15**
  - New: Improved error handling
 
