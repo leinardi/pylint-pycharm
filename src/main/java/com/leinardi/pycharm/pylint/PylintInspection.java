@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.leinardi.pycharm.pylint.PylintBundle.message;
-import static com.leinardi.pycharm.pylint.util.Async.asyncResultOf;
 import static com.leinardi.pycharm.pylint.util.Notifications.showException;
 import static com.leinardi.pycharm.pylint.util.Notifications.showWarning;
 import static java.util.Collections.singletonList;
@@ -62,8 +61,7 @@ public class PylintInspection extends LocalInspectionTool {
     public ProblemDescriptor[] checkFile(@NotNull final PsiFile psiFile,
                                          @NotNull final InspectionManager manager,
                                          final boolean isOnTheFly) {
-        return asProblemDescriptors(asyncResultOf(() -> inspectFile(psiFile, manager), NO_PROBLEMS_FOUND),
-                manager);
+        return asProblemDescriptors(inspectFile(psiFile, manager), manager);
     }
 
     @Nullable
