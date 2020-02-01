@@ -26,8 +26,6 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiJavaFile;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.util.TempDirProvider;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +47,6 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntUnaryOperator;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -159,12 +156,13 @@ public class ScannableFile {
         return tmpDirForFile;
     }
 
-//    @NotNull
-//    private File classPackagePath(final @NotNull PsiJavaFile file, final @NotNull File baseTmpDir) {
-//        final String packagePath = file.getPackageName().replaceAll("\\.", Matcher.quoteReplacement(File.separator));
-//
-//        return new File(baseTmpDir.getAbsolutePath() + File.separator + packagePath);
-//    }
+    //    @NotNull
+    //    private File classPackagePath(final @NotNull PsiJavaFile file, final @NotNull File baseTmpDir) {
+    //        final String packagePath = file.getPackageName().replaceAll("\\.", Matcher.quoteReplacement(File
+    //        .separator));
+    //
+    //        return new File(baseTmpDir.getAbsolutePath() + File.separator + packagePath);
+    //    }
 
     private File relativePathToProjectRoot(final @NotNull PsiFile file, final @NotNull File baseTmpDir) {
         if (file.getParent() != null) {
