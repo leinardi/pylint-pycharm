@@ -1,3 +1,8 @@
+**[0.12.0] 2020-02-01**
+ - New: Min IDEA version raised from 2016 to 2018
+ - New: Tidied up deprecations in the 2018 SDK
+ - New: Fixed possible deadlock during inspection
+
 **[0.11.2] 2020-02-01**
  - Fix #42: no linting when using `--init-hook` in the parameter field
 
