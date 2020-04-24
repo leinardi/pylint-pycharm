@@ -83,7 +83,7 @@ public class PylintRunner {
         }
         VirtualFile pylintFile = LocalFileSystem.getInstance().findFileByPath(pylintPath);
         if (pylintFile == null || !pylintFile.exists()) {
-            LOG.error("Error while checking Pylint path " + pylintPath + ": null or not exists");
+            LOG.warn("Error while checking Pylint path " + pylintPath + ": null or not exists");
             return false;
         }
         GeneralCommandLine cmd = getPylintCommandLine(project, pylintPath);
@@ -113,7 +113,7 @@ public class PylintRunner {
             }
         } catch (ExecutionException | InterruptedException e) {
             LOG.info("Command Line string: " + cmd.getCommandLineString());
-            LOG.error("Error while checking Pylint path", e);
+            LOG.warn("Error while checking Pylint path", e);
             return false;
         }
     }
@@ -219,7 +219,7 @@ public class PylintRunner {
             }
             if (process.exitValue() != 0 || !path.isPresent()) {
                 LOG.info("Command Line string: " + cmd.getCommandLineString());
-                LOG.error("Pylint path detect process.exitValue: " + process.exitValue());
+                LOG.warn("Pylint path detect process.exitValue: " + process.exitValue());
                 return "";
             }
             LOG.info("Detected Pylint path: " + path.get());

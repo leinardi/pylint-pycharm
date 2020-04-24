@@ -1,3 +1,6 @@
+**[0.12.1] 2020-02-04**
+ - Fixed regression generating several errors in Event Log during inspection
+ 
 **[0.12.0] 2020-02-01**
  - New: Min IDEA version raised from 2016 to 2018
  - New: Tidied up deprecations in the 2018 SDK
