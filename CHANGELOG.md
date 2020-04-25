@@ -1,3 +1,6 @@
+**[0.12.2] 2020-04-25**
+ - Fixed #61: Changed module/project icons to be compatible with EAPs of IDEA 2020.1
+
 **[0.12.1] 2020-02-04**
  - Fixed regression generating several errors in Event Log during inspection
  

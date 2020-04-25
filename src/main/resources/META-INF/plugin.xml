@@ -84,13 +84,13 @@
                     class="com.leinardi.pycharm.pylint.actions.DisplayErrors"
                     text="Display Errors"
                     description="Display error results"
-                    icon="/compiler/error.png"/>
+                    icon="/general/error.png"/>
 
             <action id="PylintDisplayWarningsAction"
                     class="com.leinardi.pycharm.pylint.actions.DisplayWarnings"
                     text="Display Warnings"
                     description="Display warning results"
-                    icon="/compiler/warning.png"/>
+                    icon="/general/warning.png"/>
 
             <action id="PylintDisplayConventionAction"
                     class="com.leinardi.pycharm.pylint.actions.DisplayConvention"
@@ -149,28 +149,28 @@
                     class="com.leinardi.pycharm.pylint.actions.ScanModule"
                     text="Check Module"
                     description="Run Pylint on all files in the current module"
-                    icon="/modules/modulesNode.png">
+                    icon="/nodes/ideaModule.png">
             </action>
 
             <action id="PylintProjectFilesAction"
                     class="com.leinardi.pycharm.pylint.actions.ScanProject"
                     text="Check Project"
                     description="Run Pylint on all files in the current project"
-                    icon="/general/projectTab.png">
+                    icon="/nodes/ideaProject.png">
             </action>
 
             <action id="PylintModifiedFilesAction"
                     class="com.leinardi.pycharm.pylint.actions.ScanModifiedFiles"
                     text="Check All Modified Files"
                     description="Run Pylint on all modified files"
-                    icon="/general/toolWindowChanges.png">
+                    icon="/actions/listChanges.png">
             </action>
 
             <action id="PylintDefaultChangeListAction"
                     class="com.leinardi.pycharm.pylint.actions.ScanCurrentChangeList"
                     text="Check Files in the Current Change List"
                     description="Run Pylint on the current change list"
-                    icon="/general/smallConfigurableVcs.png">
+                    icon="/vcs/patch.png">
             </action>
 
             <separator/>
