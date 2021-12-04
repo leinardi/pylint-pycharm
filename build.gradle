@@ -77,6 +77,10 @@ intellij {
     plugins += [pythonPlugin]
 }
 
+runIde {
+    systemProperties.put("idea.log.debug.categories", "#com.leinardi.pycharm.mypy")
+}
+
 patchPluginXml {
     version project.property('version')
     sinceBuild project.property('sinceBuild')
@@ -133,4 +137,9 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
             ["ANDROIDLINT", ".", ".*/reports/lint-results.*\\.xml\$", "Android Lint"],
             ["GOOGLEERRORPRONE", ".", ".*/build.log\$", "Error Prone"]
     ]
+}
+
+wrapper {
+    gradleVersion = "7.3"
+    distributionType = Wrapper.DistributionType.ALL
 }
