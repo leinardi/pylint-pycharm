@@ -46,12 +46,17 @@
 
         <projectConfigurable instance="com.leinardi.pycharm.pylint.PylintConfigurable"/>
 
-        <localInspection implementationClass="com.leinardi.pycharm.pylint.PylintInspection"
+        <externalAnnotator language="Python" implementationClass="com.leinardi.pycharm.pylint.PylintAnnotator"/>
+
+        <localInspection implementationClass="com.leinardi.pycharm.pylint.PylintBatchInspection"
+                         language="Python"
                          bundle="com.leinardi.pycharm.pylint.PylintBundle"
                          key="inspection.display-name"
                          groupKey="inspection.group"
+                         shortName="Pylint"
                          level="WARNING"
-                         enabledByDefault="false"/>
+                         unfair="true"
+                         enabledByDefault="true"/>
 
         <checkinHandlerFactory id="CheckStyleIDEACheckInHandlerFactory"
                                implementation="com.leinardi.pycharm.pylint.handlers.ScanFilesBeforeCheckinHandlerFactory"/>
