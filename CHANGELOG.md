@@ -1,3 +1,8 @@
+**[0.13.0] 2021-12-05**
+- Fixed #11: Stopping old instances of PyLint when requesting new ones (a huge thanks to @intgr for fixing this issue for [mypy-pycharm](https://github.com/leinardi/mypy-pycharm), making the port for this plugin trivial!)
+- New: Min IDEA version raised from 2018 to PC-2021.2.3
+- Several dependency updates
+
 **[0.12.2] 2020-04-25**
  - Fixed #61: Changed module/project icons to be compatible with EAPs of IDEA 2020.1
 
