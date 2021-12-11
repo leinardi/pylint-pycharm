@@ -140,7 +140,7 @@ public class PylintRunner {
             VirtualFile pylintFile = LocalFileSystem.getInstance()
                     .findFileByPath(interpreterFile.getParent().getPath() + File.separator + PYLINT_EXECUTABLE_NAME);
             if (pylintFile != null && pylintFile.exists()) {
-                return pylintFile.getPath();
+                return pylintFile.getPresentableUrl();
             }
         } else {
             return detectSystemPylintPath();
