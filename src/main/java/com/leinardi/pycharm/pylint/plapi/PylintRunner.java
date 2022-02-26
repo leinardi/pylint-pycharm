@@ -229,7 +229,8 @@ public class PylintRunner {
         }
     }
 
-    public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException {
+    public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException,
+            InterruptedException {
         if (!checkPylintAvailable(project, true)) {
             return Collections.emptyList();
         }
@@ -270,18 +271,34 @@ public class PylintRunner {
 
         cmd.setWorkDirectory(project.getBasePath());
         final Process process;
+
         try {
             process = cmd.createProcess();
             Moshi moshi = new Moshi.Builder().build();
             Type type = Types.newParameterizedType(List.class, Issue.class);
             JsonAdapter<List<Issue>> adapter = moshi.adapter(type);
             InputStream inputStream = process.getInputStream();
-            //TODO check stderr for errors
+            assert (inputStream != null);
+            List<Issue> issues;
             if (checkIfInputStreamIsEmpty(inputStream)) {
-                return new ArrayList<>();
+                issues = new ArrayList<>();
             } else {
-                return adapter.fromJson(Okio.buffer(Okio.source(inputStream)));
+                issues = adapter.fromJson(Okio.buffer(Okio.source(inputStream)));
             }
+            process.waitFor();
+
+            // Anything equal or bigger than 32 is an abnormal exit code
+            // See https://docs.pylint.org/en/1.6.0/run.html#exit-codes
+            int exitCode = process.exitValue();
+            if (exitCode >= 32) {
+                InputStream errStream = process.getErrorStream();
+                String detail = new BufferedReader(new InputStreamReader(errStream))
+                        .lines().collect(Collectors.joining("\n"));
+
+                Notifications.showPylintAbnormalExit(project, detail);
+                throw new PylintToolException("Pylint failed with code " + exitCode);
+            }
+            return issues;
         } catch (InterruptedIOException e) {
             LOG.info("Command Line string: " + cmd.getCommandLineString());
             throw e;

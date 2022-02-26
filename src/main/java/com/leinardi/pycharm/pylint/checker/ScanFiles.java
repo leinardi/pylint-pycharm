@@ -92,7 +92,8 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         return filePathsToElements;
     }
 
-    private Map<PsiFile, List<Problem>> checkFiles(final Set<PsiFile> filesToScan) throws InterruptedIOException {
+    private Map<PsiFile, List<Problem>> checkFiles(final Set<PsiFile> filesToScan)
+            throws InterruptedIOException, InterruptedException {
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
             scannableFiles.addAll(ScannableFile.createAndValidate(filesToScan, plugin));
@@ -103,7 +104,8 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         }
     }
 
-    private Map<PsiFile, List<Problem>> scan(final List<ScannableFile> filesToScan) throws InterruptedIOException {
+    private Map<PsiFile, List<Problem>> scan(final List<ScannableFile> filesToScan)
+            throws InterruptedIOException, InterruptedException {
         Map<String, PsiFile> fileNamesToPsiFiles = mapFilesToElements(filesToScan);
         List<Issue> errors = PylintRunner.scan(plugin.getProject(), fileNamesToPsiFiles.keySet());
         String baseDir = plugin.getProject().getBasePath();
