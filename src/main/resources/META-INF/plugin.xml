@@ -5,7 +5,7 @@
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~      https://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,13 +26,7 @@
     <!--suppress PluginXmlValidity -->
     <depends>com.intellij.modules.python</depends>
 
-
-    <project-components>
-        <component>
-            <implementation-class>com.leinardi.pycharm.pylint.PylintPlugin</implementation-class>
-            <interface-class>com.leinardi.pycharm.pylint.PylintPlugin</interface-class>
-        </component>
-    </project-components>
+    <resource-bundle>com.leinardi.pycharm.pylint.PylintBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Pylint"
@@ -41,8 +35,7 @@
                     factoryClass="com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowFactory"
                     icon="/com/leinardi/pycharm/pylint/images/pylint.png"/>
 
-        <projectService serviceInterface="com.leinardi.pycharm.pylint.PylintConfigService"
-                        serviceImplementation="com.leinardi.pycharm.pylint.PylintConfigService"/>
+        <projectService serviceImplementation="com.leinardi.pycharm.pylint.PylintConfigService"/>
 
         <projectConfigurable instance="com.leinardi.pycharm.pylint.PylintConfigurable"/>
 
@@ -50,7 +43,6 @@
 
         <localInspection implementationClass="com.leinardi.pycharm.pylint.PylintBatchInspection"
                          language="Python"
-                         bundle="com.leinardi.pycharm.pylint.PylintBundle"
                          key="inspection.display-name"
                          groupKey="inspection.group"
                          shortName="Pylint"
@@ -60,6 +52,8 @@
 
         <checkinHandlerFactory id="CheckStyleIDEACheckInHandlerFactory"
                                implementation="com.leinardi.pycharm.pylint.handlers.ScanFilesBeforeCheckinHandlerFactory"/>
+        <notificationGroup id="alerts" displayType="BALLOON" key="plugin.notification.alerts"/>
+        <notificationGroup id="logging" displayType="NONE" key="plugin.notification.logging"/>
     </extensions>
 
     <actions>

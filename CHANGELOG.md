@@ -1,3 +1,9 @@
+**[0.14.0] 2022-02-26**
+- New: Improved executable auto-detection on Windows
+- New: Make plugin hot-reloadable
+- New: Show notification when PyLint exits abnormally
+- Several dependency updates
+
 **[0.13.1] 2021-12-06**
 - New: Minimum compatibility version raised to 201.8743
 
