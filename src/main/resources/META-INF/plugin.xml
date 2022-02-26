@@ -28,13 +28,6 @@
 
     <resource-bundle>com.leinardi.pycharm.pylint.PylintBundle</resource-bundle>
 
-    <project-components>
-        <component>
-            <implementation-class>com.leinardi.pycharm.pylint.PylintPlugin</implementation-class>
-            <interface-class>com.leinardi.pycharm.pylint.PylintPlugin</interface-class>
-        </component>
-    </project-components>
-
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Pylint"
                     anchor="bottom"
@@ -42,8 +35,7 @@
                     factoryClass="com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowFactory"
                     icon="/com/leinardi/pycharm/pylint/images/pylint.png"/>
 
-        <projectService serviceInterface="com.leinardi.pycharm.pylint.PylintConfigService"
-                        serviceImplementation="com.leinardi.pycharm.pylint.PylintConfigService"/>
+        <projectService serviceImplementation="com.leinardi.pycharm.pylint.PylintConfigService"/>
 
         <projectConfigurable instance="com.leinardi.pycharm.pylint.PylintConfigurable"/>
 

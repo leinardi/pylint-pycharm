@@ -38,7 +38,7 @@ public class ClearAll extends BaseAction {
         }
 
         final PylintPlugin pylintPlugin
-                = project.getComponent(PylintPlugin.class);
+                = project.getService(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }

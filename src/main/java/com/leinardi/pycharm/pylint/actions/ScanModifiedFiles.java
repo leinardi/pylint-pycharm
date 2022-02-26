@@ -47,7 +47,7 @@ public class ScanModifiedFiles extends BaseAction {
             }
 
             final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
-            project.getComponent(PylintPlugin.class).asyncScanFiles(
+            project.getService(PylintPlugin.class).asyncScanFiles(
                     VfUtil.filterOnlyPythonProjectFiles(project, changeListManager.getAffectedFiles())
             );
         } catch (Throwable e) {
@@ -66,7 +66,7 @@ public class ScanModifiedFiles extends BaseAction {
                 return;
             }
 
-            final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
+            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }

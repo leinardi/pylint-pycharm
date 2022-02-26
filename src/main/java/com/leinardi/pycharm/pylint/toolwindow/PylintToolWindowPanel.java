@@ -132,7 +132,7 @@ public class PylintToolWindowPanel extends JPanel {
         this.toolWindow = toolWindow;
         this.project = project;
 
-        pylintPlugin = project.getComponent(PylintPlugin.class);
+        pylintPlugin = project.getService(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }

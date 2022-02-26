@@ -39,7 +39,7 @@ public class DisplayInfo extends ToggleAction {
         }
 
         final PylintPlugin pylintPlugin
-                = project.getComponent(PylintPlugin.class);
+                = project.getService(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }
@@ -63,7 +63,7 @@ public class DisplayInfo extends ToggleAction {
         }
 
         final PylintPlugin pylintPlugin
-                = project.getComponent(PylintPlugin.class);
+                = project.getService(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }

@@ -59,7 +59,7 @@ public abstract class BaseAction extends AnAction {
                 return;
             }
 
-            final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
+            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }

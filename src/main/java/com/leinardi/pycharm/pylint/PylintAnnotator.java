@@ -66,7 +66,7 @@ public class PylintAnnotator extends ExternalAnnotator<PylintAnnotator.State, Py
     private static final String ERROR_MESSAGE_ID_SYNTAX_ERROR = "E0001";
 
     private PylintPlugin plugin(final Project project) {
-        final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
+        final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
         if (pylintPlugin == null) {
             throw new IllegalStateException("Couldn't get pylint plugin");
         }

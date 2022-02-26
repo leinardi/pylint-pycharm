@@ -34,7 +34,7 @@ class ScanSourceRootsAction implements Runnable {
 
     @Override
     public void run() {
-        project.getComponent(PylintPlugin.class)
+        project.getService(PylintPlugin.class)
                 .asyncScanFiles(VfUtil.filterOnlyPythonProjectFiles(project,
                         VfUtil.flattenFiles(sourceRoots)));
     }

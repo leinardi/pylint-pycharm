@@ -39,7 +39,7 @@ public class StopCheck extends BaseAction {
 
         try {
             final PylintPlugin pylintPlugin
-                    = project.getComponent(PylintPlugin.class);
+                    = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
@@ -70,7 +70,7 @@ public class StopCheck extends BaseAction {
             }
 
             final PylintPlugin pylintPlugin
-                    = project.getComponent(PylintPlugin.class);
+                    = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }

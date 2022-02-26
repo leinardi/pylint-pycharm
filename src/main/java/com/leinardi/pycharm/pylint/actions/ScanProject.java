@@ -40,7 +40,7 @@ public class ScanProject extends BaseAction {
                 return;
             }
 
-            final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
+            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
@@ -89,7 +89,7 @@ public class ScanProject extends BaseAction {
                 return;
             }
 
-            final PylintPlugin pylintPlugin = project.getComponent(PylintPlugin.class);
+            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }

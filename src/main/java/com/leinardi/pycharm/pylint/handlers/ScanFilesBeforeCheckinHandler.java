@@ -101,7 +101,7 @@ public class ScanFilesBeforeCheckinHandler extends CheckinHandler {
             return COMMIT;
         }
 
-        final PylintPlugin plugin = project.getComponent(PylintPlugin.class);
+        final PylintPlugin plugin = project.getService(PylintPlugin.class);
         if (plugin == null) {
             LOG.warn("Could not get Pylint Plug-in, skipping");
             return COMMIT;

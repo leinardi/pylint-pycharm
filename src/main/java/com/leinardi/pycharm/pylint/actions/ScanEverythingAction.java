@@ -39,6 +39,6 @@ class ScanEverythingAction implements Runnable {
         filesToScan = VfUtil.flattenFiles(new VirtualFile[]{project.getBaseDir()});
         filesToScan = VfUtil.filterOnlyPythonProjectFiles(project, filesToScan);
 
-        project.getComponent(PylintPlugin.class).asyncScanFiles(filesToScan);
+        project.getService(PylintPlugin.class).asyncScanFiles(filesToScan);
     }
 }

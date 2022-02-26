@@ -46,7 +46,7 @@ public class ScanCurrentFile extends BaseAction {
 
         try {
             final PylintPlugin pylintPlugin
-                    = project.getComponent(PylintPlugin.class);
+                    = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
@@ -59,7 +59,7 @@ public class ScanCurrentFile extends BaseAction {
 
                     final VirtualFile selectedFile = getSelectedFile(project);
                     if (selectedFile != null) {
-                        project.getComponent(PylintPlugin.class).asyncScanFiles(
+                        project.getService(PylintPlugin.class).asyncScanFiles(
                                 Collections.singletonList(selectedFile));
                     }
 
@@ -111,7 +111,7 @@ public class ScanCurrentFile extends BaseAction {
             }
 
             final PylintPlugin pylintPlugin
-                    = project.getComponent(PylintPlugin.class);
+                    = project.getService(PylintPlugin.class);
             if (pylintPlugin == null) {
                 throw new IllegalStateException("Couldn't get pylint plugin");
             }
