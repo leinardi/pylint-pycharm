@@ -18,7 +18,7 @@ package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.actionSystem.ToggleAction;
+import com.intellij.openapi.project.DumbAwareToggleAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -29,7 +29,7 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 /**
  * Action to toggle error display in tool window.
  */
-public class DisplayInfo extends ToggleAction {
+public class DisplayInfo extends DumbAwareToggleAction {
 
     @Override
     public boolean isSelected(final AnActionEvent event) {

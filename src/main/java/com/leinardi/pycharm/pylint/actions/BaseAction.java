@@ -16,11 +16,11 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
@@ -40,12 +40,12 @@ import static java.util.Optional.ofNullable;
 /**
  * Base class for plug-in actions.
  */
-public abstract class BaseAction extends AnAction {
+public abstract class BaseAction extends DumbAwareAction {
 
     private static final Logger LOG = Logger.getInstance(BaseAction.class);
 
     @Override
-    public void update(final AnActionEvent event) {
+    public void update(final @NotNull AnActionEvent event) {
         Project project;
         try {
             project = PlatformDataKeys.PROJECT.getData(event.getDataContext());

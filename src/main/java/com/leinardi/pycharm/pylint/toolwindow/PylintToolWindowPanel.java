@@ -26,6 +26,7 @@ import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
@@ -74,7 +75,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 /**
  * The tool window for Pylint scans.
  */
-public class PylintToolWindowPanel extends JPanel {
+public class PylintToolWindowPanel extends JPanel implements DumbAware {
 
     public static final String ID_TOOLWINDOW = "Pylint";
 
