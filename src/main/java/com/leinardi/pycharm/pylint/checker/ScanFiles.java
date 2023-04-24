@@ -16,8 +16,8 @@
 
 package com.leinardi.pycharm.pylint.checker;
 
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -112,14 +112,7 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         final ProcessResultsThread findThread = new ProcessResultsThread(false, tabWidth, baseDir,
                 errors, fileNamesToPsiFiles);
 
-        final Application application = ApplicationManager.getApplication();
-        // TODO Make sure that this does not block ... it seems that we are not starting a new thread.
-        //      Sometimes, the editor is non-responsive because Pylint is still processing results.
-        if (application.isDispatchThread()) {
-            findThread.run();
-        } else {
-            application.runReadAction(findThread);
-        }
+        ReadAction.run(findThread);
         return findThread.getProblems();
     }
 
