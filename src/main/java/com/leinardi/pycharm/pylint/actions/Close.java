@@ -17,12 +17,9 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.leinardi.pycharm.pylint.PylintPlugin;
-import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
+import org.jetbrains.annotations.NotNull;
+
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
 
 /**
  * Action to close the tool window.
@@ -30,21 +27,8 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 public class Close extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-        if (project == null) {
-            return;
-        }
-
-        final PylintPlugin pylintPlugin
-                = project.getService(PylintPlugin.class);
-        if (pylintPlugin == null) {
-            throw new IllegalStateException("Couldn't get pylint plugin");
-        }
-
-        final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-        toolWindow.hide(null);
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> toolWindow(project).hide(null));
     }
 
 }

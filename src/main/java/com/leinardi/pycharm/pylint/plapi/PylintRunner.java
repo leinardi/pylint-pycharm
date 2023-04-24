@@ -51,9 +51,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,7 +230,7 @@ public class PylintRunner {
     public static List<Issue> scan(Project project, Set<String> filesToScan) throws InterruptedIOException,
             InterruptedException {
         if (!checkPylintAvailable(project, true)) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
         if (filesToScan.isEmpty()) {
@@ -251,7 +249,7 @@ public class PylintRunner {
 
         GeneralCommandLine cmd = getPylintCommandLine(project, pylintPath);
 
-        cmd.setCharset(Charset.forName("UTF-8"));
+        cmd.setCharset(UTF_8);
         cmd.addParameter("-f");
         cmd.addParameter("json");
 
@@ -292,7 +290,7 @@ public class PylintRunner {
             int exitCode = process.exitValue();
             if (exitCode >= 32) {
                 InputStream errStream = process.getErrorStream();
-                String detail = new BufferedReader(new InputStreamReader(errStream))
+                String detail = new BufferedReader(new InputStreamReader(errStream, UTF_8))
                         .lines().collect(Collectors.joining("\n"));
 
                 Notifications.showPylintAbnormalExit(project, detail);

@@ -19,6 +19,8 @@ package com.leinardi.pycharm.pylint.toolwindow;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
@@ -50,7 +52,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -86,8 +87,6 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
 
     private static final String MAIN_ACTION_GROUP = "PylintPluginActions";
     private static final String TREE_ACTION_GROUP = "PylintPluginTreeActions";
-    private static final String DEFAULT_OVERRIDE = PylintBundle.message("plugin.toolwindow.default-file");
-
     private static final Map<Pattern, String> PYLINT_ERROR_PATTERNS
             = new HashMap<>();
 
@@ -98,7 +97,7 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
     private boolean displayingErrors = true;
     private boolean displayingWarnings = true;
     private boolean displayingConvention = true;
-    private boolean displayingRefactor = true;
+    private boolean displayingRefactors = true;
     private boolean displayingInfo = true;
 
     private JTree resultsTree;
@@ -142,11 +141,13 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
                 ActionManager.getInstance().getAction(MAIN_ACTION_GROUP);
         final ActionToolbar mainToolbar = ActionManager.getInstance().createActionToolbar(
                 ID_TOOLWINDOW, mainActionGroup, false);
+        mainToolbar.setTargetComponent(this);
 
         final ActionGroup treeActionGroup = (ActionGroup)
                 ActionManager.getInstance().getAction(TREE_ACTION_GROUP);
         final ActionToolbar treeToolbar = ActionManager.getInstance().createActionToolbar(
                 ID_TOOLWINDOW, treeActionGroup, false);
+        treeToolbar.setTargetComponent(this);
 
         final Box toolBarBox = Box.createHorizontalBox();
         toolBarBox.add(mainToolbar.getComponent());
@@ -189,7 +190,7 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
         progressPanel.add(progressLabel);
         progressPanel.add(Box.createHorizontalGlue());
         progressPanel.setFloatable(false);
-        progressPanel.setBackground(UIManager.getColor("Panel.background"));
+        progressPanel.setOpaque(false);
         progressPanel.setBorder(null);
 
         final JPanel toolPanel = new JPanel(new BorderLayout());
@@ -313,25 +314,27 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
         }
 
         final FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
-        final FileEditor[] editor = fileEditorManager.openFile(
-                virtualFile, true);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final FileEditor[] editor = fileEditorManager.openFile(
+                    virtualFile, true);
 
-        if (editor.length > 0 && editor[0] instanceof TextEditor) {
-            final LogicalPosition problemPos = new LogicalPosition(
-                    Math.max(lineFor(nodeInfo) - 1, 0), Math.max(columnFor(nodeInfo), 0));
+            if (editor.length > 0 && editor[0] instanceof TextEditor) {
+                final LogicalPosition problemPos = new LogicalPosition(
+                        Math.max(lineFor(nodeInfo) - 1, 0), Math.max(columnFor(nodeInfo), 0));
 
-            final Editor textEditor = ((TextEditor) editor[0]).getEditor();
-            textEditor.getCaretModel().moveToLogicalPosition(problemPos);
-            textEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-        }
+                final Editor textEditor = ((TextEditor) editor[0]).getEditor();
+                textEditor.getCaretModel().moveToLogicalPosition(problemPos);
+                textEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+            }
+        }, ModalityState.NON_MODAL);
     }
 
     private int lineFor(final ResultTreeNode nodeInfo) {
-        return nodeInfo.getProblem().getLine();
+        return nodeInfo.getProblem().line();
     }
 
     private int columnFor(final ResultTreeNode nodeInfo) {
-        return nodeInfo.getProblem().getColumn();
+        return nodeInfo.getProblem().column();
     }
 
     /**
@@ -533,7 +536,7 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
         if (displayingConvention) {
             severityLevels.add(SeverityLevel.CONVENTION);
         }
-        if (displayingRefactor) {
+        if (displayingRefactors) {
             severityLevels.add(SeverityLevel.REFACTOR);
         }
         if (displayingInfo) {
@@ -590,12 +593,12 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
         this.displayingConvention = displayingConvention;
     }
 
-    public boolean isDisplayingRefactor() {
-        return displayingRefactor;
+    public boolean isDisplayingRefactors() {
+        return displayingRefactors;
     }
 
-    public void setDisplayingRefactor(final boolean displayingRefactor) {
-        this.displayingRefactor = displayingRefactor;
+    public void setDisplayingRefactors(final boolean displayingRefactors) {
+        this.displayingRefactors = displayingRefactors;
     }
 
     public boolean isDisplayingInfo() {

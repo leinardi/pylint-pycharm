@@ -72,7 +72,7 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         try {
             fireCheckStarting(files);
             return scanCompletedSuccessfully(checkFiles(new HashSet<>(files)));
-        } catch (final InterruptedIOException e) {
+        } catch (final InterruptedIOException | InterruptedException e) {
             LOG.debug("Scan cancelled by PyCharm", e);
             return scanCompletedSuccessfully(emptyMap());
         } catch (final PylintPluginException e) {
@@ -97,7 +97,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
             scannableFiles.addAll(ScannableFile.createAndValidate(filesToScan, plugin));
-
             return scan(scannableFiles);
         } finally {
             scannableFiles.forEach(ScannableFile::deleteIfRequired);
@@ -151,10 +150,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
 
     private void fireScanFailedWithError(final PylintPluginException error) {
         listeners.forEach(listener -> listener.scanFailedWithError(error));
-    }
-
-    private void fireFilesScanned(final int count) {
-        listeners.forEach(listener -> listener.filesScanned(count));
     }
 
     private List<PsiFile> buildFilesList(final PsiManager psiManager, final VirtualFile virtualFile) {

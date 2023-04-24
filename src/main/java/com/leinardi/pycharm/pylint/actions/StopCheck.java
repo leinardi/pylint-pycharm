@@ -17,13 +17,12 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
-import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
+import org.jetbrains.annotations.NotNull;
+
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
 
 /**
  * Action to stop a check in progress.
@@ -31,55 +30,41 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 public class StopCheck extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-        if (project == null) {
-            return;
-        }
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> {
+            try {
+                final ToolWindow toolWindow = toolWindow(project);
+                toolWindow.activate(() -> {
+                    setProgressText(toolWindow, "plugin.status.in-progress.current");
+                    final PylintPlugin mypyPlugin
+                            = project.getService(PylintPlugin.class);
+                    if (mypyPlugin == null) {
+                        throw new IllegalStateException("Couldn't get mypy plugin");
+                    }
+                    mypyPlugin.stopChecks();
 
-        try {
-            final PylintPlugin pylintPlugin
-                    = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
+                    setProgressText(toolWindow, "plugin.status.aborted");
+                });
+
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Abort Scan", e);
             }
-
-            final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                    project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-            toolWindow.activate(() -> {
-                setProgressText(toolWindow, "plugin.status.in-progress.current");
-
-                pylintPlugin.stopChecks();
-
-                setProgressText(toolWindow, "plugin.status.aborted");
-            });
-
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Abort Scan", e);
-        }
+        });
     }
 
     @Override
-    public void update(final AnActionEvent event) {
-        super.update(event);
-
-        try {
-            final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-            if (project == null) { // check if we're loading...
-                return;
+    public void update(final @NotNull AnActionEvent event) {
+        final Presentation presentation = event.getPresentation();
+        project(event).ifPresentOrElse(project -> {
+            final PylintPlugin mypyPlugin = project.getService(PylintPlugin.class);
+            if (mypyPlugin == null) {
+                throw new IllegalStateException("Couldn't get mypy plugin");
             }
-
-            final PylintPlugin pylintPlugin
-                    = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
+            try {
+                presentation.setEnabled(mypyPlugin.isScanInProgress());
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Abort button update", e);
             }
-
-            final Presentation presentation = event.getPresentation();
-            presentation.setEnabled(pylintPlugin.isScanInProgress());
-
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Abort button update", e);
-        }
+        }, () -> presentation.setEnabled(false));
     }
 }

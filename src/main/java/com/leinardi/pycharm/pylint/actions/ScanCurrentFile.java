@@ -17,7 +17,6 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -25,12 +24,13 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.leinardi.pycharm.pylint.PylintPlugin;
-import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 import com.leinardi.pycharm.pylint.util.FileTypes;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
 
 /**
  * Action to execute a Pylint scan on the current editor file.
@@ -38,43 +38,32 @@ import java.util.Collections;
 public class ScanCurrentFile extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-        if (project == null) {
-            return;
-        }
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> {
+            try {
+                final ToolWindow toolWindow = toolWindow(project);
+                toolWindow.activate(() -> {
+                    try {
+                        setProgressText(toolWindow, "plugin.status.in-progress.current");
 
-        try {
-            final PylintPlugin pylintPlugin
-                    = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
-            }
+                        final VirtualFile selectedFile = getSelectedFile(project);
+                        if (selectedFile != null) {
+                            project.getService(PylintPlugin.class).asyncScanFiles(
+                                    Collections.singletonList(selectedFile));
+                        }
 
-            final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                    project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-            toolWindow.activate(() -> {
-                try {
-                    setProgressText(toolWindow, "plugin.status.in-progress.current");
-
-                    final VirtualFile selectedFile = getSelectedFile(project);
-                    if (selectedFile != null) {
-                        project.getService(PylintPlugin.class).asyncScanFiles(
-                                Collections.singletonList(selectedFile));
+                    } catch (Throwable e) {
+                        PylintPlugin.processErrorAndLog("Current File scan", e);
                     }
+                });
 
-                } catch (Throwable e) {
-                    PylintPlugin.processErrorAndLog("Current File scan", e);
-                }
-            });
-
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Current File scan", e);
-        }
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Current File scan", e);
+            }
+        });
     }
 
-    private VirtualFile getSelectedFile(final Project project) {
-
+    private VirtualFile getSelectedFile(final @NotNull Project project) {
         VirtualFile selectedFile = null;
 
         final Editor selectedTextEditor = FileEditorManager.getInstance(project).getSelectedTextEditor();
@@ -101,31 +90,27 @@ public class ScanCurrentFile extends BaseAction {
     }
 
     @Override
-    public void update(final AnActionEvent event) {
-        super.update(event);
+    public void update(final @NotNull AnActionEvent event) {
+        final Presentation presentation = event.getPresentation();
 
-        try {
-            final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-            if (project == null) { // check if we're loading...
-                return;
-            }
+        project(event).ifPresentOrElse(project -> {
+            try {
+                final PylintPlugin mypyPlugin
+                        = project.getService(PylintPlugin.class);
+                if (mypyPlugin == null) {
+                    throw new IllegalStateException("Couldn't get mypy plugin");
+                }
+                final VirtualFile selectedFile = getSelectedFile(project);
 
-            final PylintPlugin pylintPlugin
-                    = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
+                // disable if no file is selected or scan in progress
+                if (selectedFile != null) {
+                    presentation.setEnabled(!mypyPlugin.isScanInProgress());
+                } else {
+                    presentation.setEnabled(false);
+                }
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Current File button update", e);
             }
-            final VirtualFile selectedFile = getSelectedFile(project);
-
-            // disable if no file is selected or scan in progress
-            final Presentation presentation = event.getPresentation();
-            if (selectedFile != null) {
-                presentation.setEnabled(!pylintPlugin.isScanInProgress());
-            } else {
-                presentation.setEnabled(false);
-            }
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Current File button update", e);
-        }
+        }, () -> presentation.setEnabled(false));
     }
 }

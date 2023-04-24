@@ -17,11 +17,9 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
 import com.leinardi.pycharm.pylint.PylintConfigurable;
-import com.leinardi.pycharm.pylint.PylintPlugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Action to close the tool window.
@@ -29,18 +27,9 @@ import com.leinardi.pycharm.pylint.PylintPlugin;
 public class Settings extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-        if (project == null) {
-            return;
-        }
-
-        final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
-        if (pylintPlugin == null) {
-            throw new IllegalStateException("Couldn't get pylint plugin");
-        }
-
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, PylintConfigurable.class);
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> ShowSettingsUtil.getInstance().showSettingsDialog(project,
+                PylintConfigurable.class));
     }
 
 }
