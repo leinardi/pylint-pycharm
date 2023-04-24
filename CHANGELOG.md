@@ -1,3 +1,8 @@
+**[0.15.0] 2023-04-24**
+- Fixed Icons not visible in new Jetbrains UI
+- New: Min IDEA version raised from PC-2021.2 to PC-2022.1.4
+- Several dependency updates
+
 **[0.14.0] 2022-02-26**
 - New: Improved executable auto-detection on Windows
 - New: Make plugin hot-reloadable
