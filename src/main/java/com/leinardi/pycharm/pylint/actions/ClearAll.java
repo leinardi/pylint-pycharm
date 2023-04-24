@@ -17,13 +17,11 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.content.Content;
-import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
+import org.jetbrains.annotations.NotNull;
+
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.actOnToolWindowPanel;
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
 
 /**
  * Action to toggle error display in tool window.
@@ -31,25 +29,9 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 public class ClearAll extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-        if (project == null) {
-            return;
-        }
-
-        final PylintPlugin pylintPlugin
-                = project.getService(PylintPlugin.class);
-        if (pylintPlugin == null) {
-            throw new IllegalStateException("Couldn't get pylint plugin");
-        }
-
-        final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-
-        final Content content = toolWindow.getContentManager().getContent(0);
-        if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
-            ((PylintToolWindowPanel) content.getComponent()).clearResult();
-        }
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> actOnToolWindowPanel(toolWindow(project),
+                PylintToolWindowPanel::clearResult));
     }
 
 }

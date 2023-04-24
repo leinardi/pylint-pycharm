@@ -17,15 +17,16 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.util.ThrowableRunnable;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Action to execute a Pylint scan on the current project.
@@ -33,85 +34,76 @@ import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 public class ScanProject extends BaseAction {
 
     @Override
-    public void actionPerformed(final AnActionEvent event) {
-        try {
-            final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-            if (project == null) {
-                return;
-            }
-
-            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
-            }
-
-            final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                    project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-            toolWindow.activate(() -> {
-                try {
-                    setProgressText(toolWindow, "plugin.status.in-progress.project");
-                    Runnable scanAction = null;
-                    //                                        if (scope == ScanScope.Everything) {
-                    scanAction = new ScanEverythingAction(project);
-                    //                    } else {
-                    //                    final ProjectRootManager projectRootManager = ProjectRootManager
-                    // .getInstance(project);
-                    //                    final VirtualFile[] sourceRoots =
-                    // projectRootManager.getContentSourceRoots();
-                    //                    if (sourceRoots.length > 0) {
-                    //                        scanAction = new ScanSourceRootsAction(project, sourceRoots/*,
-                    //                                    getSelectedOverride(toolWindow)*/);
-                    //                    }
-                    //                    }
-                    //                    if (scanAction != null) {
-                    ApplicationManager.getApplication().runReadAction(scanAction);
-                    //                    }
-                } catch (Throwable e) {
-                    PylintPlugin.processErrorAndLog("Project scan", e);
+    public void actionPerformed(final @NotNull AnActionEvent event) {
+        project(event).ifPresent(project -> {
+            try {
+                final PylintPlugin mypyPlugin = project.getService(PylintPlugin.class);
+                if (mypyPlugin == null) {
+                    throw new IllegalStateException("Couldn't get mypy plugin");
                 }
-            });
 
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Project scan", e);
-        }
+                final ToolWindow toolWindow = ToolWindowManager.getInstance(
+                        project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
+                toolWindow.activate(() -> {
+                    try {
+                        setProgressText(toolWindow, "plugin.status.in-progress.project");
+                        //                                        if (scope == ScanScope.Everything) {
+                        ThrowableRunnable<RuntimeException> scanAction = new ScanEverythingAction(project);
+                        //                    } else {
+                        //                    final ProjectRootManager projectRootManager = ProjectRootManager
+                        // .getInstance(project);
+                        //                    final VirtualFile[] sourceRoots =
+                        // projectRootManager.getContentSourceRoots();
+                        //                    if (sourceRoots.length > 0) {
+                        //                        scanAction = new ScanSourceRootsAction(project, sourceRoots/*,
+                        //                                    getSelectedOverride(toolWindow)*/);
+                        //                    }
+                        //                    }
+                        //                    if (scanAction != null) {
+                        ReadAction.run(scanAction);
+                        //                    }
+                    } catch (Throwable e) {
+                        PylintPlugin.processErrorAndLog("Project scan", e);
+                    }
+                });
+
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Project scan", e);
+            }
+        });
     }
 
     @Override
-    public void update(final AnActionEvent event) {
-        super.update(event);
+    public final void update(final @NotNull AnActionEvent event) {
+        final Presentation presentation = event.getPresentation();
 
-        try {
-            final Presentation presentation = event.getPresentation();
+        project(event).ifPresentOrElse(project -> {
+            try {
 
-            final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
-            if (project == null) { // check if we're loading...
-                presentation.setEnabled(false);
-                return;
+                final PylintPlugin mypyPlugin = project.getService(PylintPlugin.class);
+                if (mypyPlugin == null) {
+                    throw new IllegalStateException("Couldn't get mypy plugin");
+                }
+                //            final ScanScope scope = mypyPlugin.configurationManager().getCurrent().getScanScope();
+
+                VirtualFile[] sourceRoots;
+                //            if (scope == ScanScope.Everything) {
+                sourceRoots = new VirtualFile[]{ProjectUtil.guessProjectDir(project)};
+                //            } else {
+                //            final ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
+                //            sourceRoots = projectRootManager.getContentSourceRoots();
+                //            }
+
+                // disable if no files are selected or scan in progress
+                if (containsAtLeastOneFile(sourceRoots)) {
+                    presentation.setEnabled(!mypyPlugin.isScanInProgress());
+                } else {
+                    presentation.setEnabled(false);
+                }
+            } catch (Throwable e) {
+                PylintPlugin.processErrorAndLog("Project button update", e);
             }
-
-            final PylintPlugin pylintPlugin = project.getService(PylintPlugin.class);
-            if (pylintPlugin == null) {
-                throw new IllegalStateException("Couldn't get pylint plugin");
-            }
-            //            final ScanScope scope = pylintPlugin.configurationManager().getCurrent().getScanScope();
-
-            VirtualFile[] sourceRoots = null;
-            //            if (scope == ScanScope.Everything) {
-            sourceRoots = new VirtualFile[]{project.getBaseDir()};
-            //            } else {
-            //            final ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
-            //            sourceRoots = projectRootManager.getContentSourceRoots();
-            //            }
-
-            // disable if no files are selected or scan in progress
-            if (containsAtLeastOneFile(sourceRoots)) {
-                presentation.setEnabled(!pylintPlugin.isScanInProgress());
-            } else {
-                presentation.setEnabled(false);
-            }
-        } catch (Throwable e) {
-            PylintPlugin.processErrorAndLog("Project button update", e);
-        }
+        }, () -> presentation.setEnabled(false));
     }
 
 }

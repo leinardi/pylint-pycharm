@@ -155,7 +155,7 @@ public class PylintAnnotator extends ExternalAnnotator<PylintAnnotator.State, Py
         HighlightSeverity severity = profile.getErrorLevel(key, file).getSeverity();
 
         for (Problem problem : results.issues) {
-            LOG.debug("                " + problem.getLine() + ": " + problem.getMessage());
+            LOG.debug("                " + problem.line() + ": " + problem.getMessage());
             problem.createAnnotation(holder, severity);
         }
     }

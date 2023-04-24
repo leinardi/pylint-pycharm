@@ -17,65 +17,44 @@
 package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.actionSystem.ToggleAction;
+import com.intellij.openapi.project.DumbAwareToggleAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.content.Content;
-import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.actOnToolWindowPanel;
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.getFromToolWindowPanel;
+import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
 
 /**
  * Action to toggle error display in tool window.
  */
-public class DisplayConvention extends ToggleAction {
+public class DisplayConvention extends DumbAwareToggleAction {
 
     @Override
-    public boolean isSelected(final AnActionEvent event) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
+    public boolean isSelected(final @NotNull AnActionEvent event) {
+        final Project project = getEventProject(event);
         if (project == null) {
             return false;
         }
 
-        final PylintPlugin pylintPlugin
-                = project.getService(PylintPlugin.class);
-        if (pylintPlugin == null) {
-            throw new IllegalStateException("Couldn't get pylint plugin");
-        }
-
-        final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-
-        final Content content = toolWindow.getContentManager().getContent(0);
-        if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
-            return ((PylintToolWindowPanel) content.getComponent()).isDisplayingConvention();
-        }
-
-        return false;
+        Boolean displayingConvention = getFromToolWindowPanel(toolWindow(project),
+                PylintToolWindowPanel::isDisplayingConvention);
+        return Objects.requireNonNullElse(displayingConvention, false);
     }
 
     @Override
-    public void setSelected(final AnActionEvent event, final boolean selected) {
-        final Project project = PlatformDataKeys.PROJECT.getData(event.getDataContext());
+    public void setSelected(final @NotNull AnActionEvent event, final boolean selected) {
+        final Project project = getEventProject(event);
         if (project == null) {
             return;
         }
 
-        final PylintPlugin pylintPlugin
-                = project.getService(PylintPlugin.class);
-        if (pylintPlugin == null) {
-            throw new IllegalStateException("Couldn't get pylint plugin");
-        }
-
-        final ToolWindow toolWindow = ToolWindowManager.getInstance(
-                project).getToolWindow(PylintToolWindowPanel.ID_TOOLWINDOW);
-
-        final Content content = toolWindow.getContentManager().getContent(0);
-        if (content != null && content.getComponent() instanceof PylintToolWindowPanel) {
-            final PylintToolWindowPanel panel = (PylintToolWindowPanel) content.getComponent();
+        actOnToolWindowPanel(toolWindow(project), panel -> {
             panel.setDisplayingConvention(selected);
             panel.filterDisplayedResults();
-        }
+        });
     }
 }

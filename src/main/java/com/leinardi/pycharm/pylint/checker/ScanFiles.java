@@ -16,8 +16,8 @@
 
 package com.leinardi.pycharm.pylint.checker;
 
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -72,7 +72,7 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         try {
             fireCheckStarting(files);
             return scanCompletedSuccessfully(checkFiles(new HashSet<>(files)));
-        } catch (final InterruptedIOException e) {
+        } catch (final InterruptedIOException | InterruptedException e) {
             LOG.debug("Scan cancelled by PyCharm", e);
             return scanCompletedSuccessfully(emptyMap());
         } catch (final PylintPluginException e) {
@@ -97,7 +97,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         final List<ScannableFile> scannableFiles = new ArrayList<>();
         try {
             scannableFiles.addAll(ScannableFile.createAndValidate(filesToScan, plugin));
-
             return scan(scannableFiles);
         } finally {
             scannableFiles.forEach(ScannableFile::deleteIfRequired);
@@ -113,14 +112,7 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
         final ProcessResultsThread findThread = new ProcessResultsThread(false, tabWidth, baseDir,
                 errors, fileNamesToPsiFiles);
 
-        final Application application = ApplicationManager.getApplication();
-        // TODO Make sure that this does not block ... it seems that we are not starting a new thread.
-        //      Sometimes, the editor is non-responsive because Pylint is still processing results.
-        if (application.isDispatchThread()) {
-            findThread.run();
-        } else {
-            application.runReadAction(findThread);
-        }
+        ReadAction.run(findThread);
         return findThread.getProblems();
     }
 
@@ -151,10 +143,6 @@ public class ScanFiles implements Callable<Map<PsiFile, List<Problem>>> {
 
     private void fireScanFailedWithError(final PylintPluginException error) {
         listeners.forEach(listener -> listener.scanFailedWithError(error));
-    }
-
-    private void fireFilesScanned(final int count) {
-        listeners.forEach(listener -> listener.filesScanned(count));
     }
 
     private List<PsiFile> buildFilesList(final PsiManager psiManager, final VirtualFile virtualFile) {

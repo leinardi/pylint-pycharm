@@ -18,11 +18,12 @@ package com.leinardi.pycharm.pylint.actions;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.ThrowableRunnable;
 import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.util.VfUtil;
 import org.jetbrains.annotations.NotNull;
 
-class ScanSourceRootsAction implements Runnable {
+class ScanSourceRootsAction implements ThrowableRunnable<RuntimeException> {
     private final Project project;
     private final VirtualFile[] sourceRoots;
 

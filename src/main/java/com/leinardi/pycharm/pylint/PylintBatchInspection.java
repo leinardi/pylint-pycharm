@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * By itself, the `PylintAnnotator` class does not provide support for the explicit "Inspect code" feature.
- *
+ * <p>
  * This class uses `ExternalAnnotatorBatchInspection` middleware to provides that functionality.
- *
+ * <p>
  * Modeled after `com.jetbrains.python.inspections.PyPep8Inspection`
  */
 public class PylintBatchInspection extends LocalInspectionTool implements ExternalAnnotatorBatchInspection {
