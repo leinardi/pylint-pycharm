@@ -1,3 +1,8 @@
+**[0.16.0] 2023-09-02**
+- Possible fixe for #82: Pylint doesn't detect remote interpreter
+- Possible fixe for #58: On Windows allow pylint to use pylint installed in WSL
+- Respect Pylint path field and don't force usage of project interpreter
+
 **[0.15.0] 2023-04-24**
 - Fixed Icons not visible in new Jetbrains UI
 - New: Min IDEA version raised from PC-2021.2 to PC-2022.1.4
