@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Roberto Leinardi.
+ * Copyright 2023 Roberto Leinardi.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,6 +152,12 @@ public class PylintRunner {
     }
 
     public static boolean checkPylintAvailable(Project project, boolean showNotifications) {
+        String pylintPath = getPylintPath(project);
+        boolean isMypyPathValid = !pylintPath.isEmpty() && isPylintPathValid(pylintPath, project);
+        if (isMypyPathValid) {
+            return true;
+        }
+
         Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
         if (projectSdk == null
                 || projectSdk.getHomeDirectory() == null
@@ -158,28 +165,17 @@ public class PylintRunner {
             if (showNotifications) {
                 Notifications.showNoPythonInterpreter(project);
             }
-            return false;
         } else if (showNotifications) {
             PyPackageManager pyPackageManager = PyPackageManager.getInstance(projectSdk);
             List<PyPackage> packages = pyPackageManager.getPackages();
             if (packages != null) {
                 if (packages.stream().noneMatch(it -> PYLINT_PACKAGE_NAME.equals(it.getName()))) {
                     Notifications.showInstallPylint(project);
-                    return false;
                 }
             }
         }
 
-        PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
-        if (pylintConfigService == null) {
-            throw new IllegalStateException("PylintConfigService is null");
-        }
-
-        boolean isPylintPathValid = isPylintPathValid(getPylintPath(project), project);
-        if (showNotifications && !isPylintPathValid) {
-            Notifications.showUnableToRunPylint(project);
-        }
-        return isPylintPathValid;
+        return false;
     }
 
     private static String getPylintrcFile(Project project, String pylintrcPath) throws PylintPluginException {
@@ -330,11 +326,28 @@ public class PylintRunner {
 
     @Nullable
     private static VirtualFile getInterpreterFile(Project project) {
-        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (projectSdk != null) {
-            return projectSdk.getHomeDirectory();
+        PylintConfigService pylintConfigService = PylintConfigService.getInstance(project);
+        if (pylintConfigService == null) {
+            throw new IllegalStateException("PylintConfigService is null");
         }
-        return null;
+        String customPylintPath = pylintConfigService.getCustomPylintPath();
+        if (!customPylintPath.isEmpty()) {
+            Path pylintFolder = Path.of(customPylintPath).getParent();
+            File file = pylintFolder.resolve("python").toFile();
+            if (!file.exists()) {
+                return null;
+            }
+
+            LocalFileSystem fileSystem = LocalFileSystem.getInstance();
+            return fileSystem.findFileByIoFile(file);
+
+        } else {
+            Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+            if (projectSdk != null) {
+                return projectSdk.getHomeDirectory();
+            }
+            return null;
+        }
     }
 
     private static void injectEnvironmentVariables(Project project, GeneralCommandLine cmd) {
