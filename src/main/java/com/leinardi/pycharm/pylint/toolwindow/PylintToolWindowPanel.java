@@ -43,6 +43,7 @@ import com.leinardi.pycharm.pylint.PylintPlugin;
 import com.leinardi.pycharm.pylint.checker.Problem;
 import com.leinardi.pycharm.pylint.exception.PylintToolException;
 import com.leinardi.pycharm.pylint.plapi.SeverityLevel;
+import com.leinardi.pycharm.pylint.util.Strings;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Box;
@@ -70,8 +71,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * The tool window for Pylint scans.
@@ -236,7 +235,7 @@ public class PylintToolWindowPanel extends JPanel implements DumbAware {
      * @param text the new progress text, or null to clear.
      */
     public void setProgressText(@Nullable final String text) {
-        if (isBlank(text)) {
+        if (Strings.isBlank(text)) {
             progressLabel.setText(" ");
         } else {
             progressLabel.setText(text);

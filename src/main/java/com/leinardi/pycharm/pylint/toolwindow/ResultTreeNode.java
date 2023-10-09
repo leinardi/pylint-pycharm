@@ -21,11 +21,10 @@ import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.checker.Problem;
 import com.leinardi.pycharm.pylint.plapi.SeverityLevel;
 import com.leinardi.pycharm.pylint.util.Icons;
+import com.leinardi.pycharm.pylint.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * The user object for meta-data on tree nodes in the tool window.
@@ -164,7 +163,7 @@ public class ResultTreeNode {
      * @param text the file the node represents.
      */
     public void setText(final String text) {
-        if (isBlank(text)) {
+        if (Strings.isBlank(text)) {
             throw new IllegalArgumentException("Text may not be null/empty");
         }
         this.text = text;
