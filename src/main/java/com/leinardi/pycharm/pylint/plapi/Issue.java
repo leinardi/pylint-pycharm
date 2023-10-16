@@ -17,7 +17,6 @@
 package com.leinardi.pycharm.pylint.plapi;
 
 import com.squareup.moshi.Json;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.Objects;
 
@@ -134,17 +133,7 @@ public class Issue {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(message)
-                .append(module)
-                .append(symbol)
-                .append(path)
-                .append(column)
-                .append(line)
-                .append(obj)
-                .append(messageId)
-                .append(severityLevel)
-                .toHashCode();
+        return Objects.hash(severityLevel, module, obj, line, column, path, symbol, message, messageId);
     }
 
     @Override
