@@ -49,6 +49,8 @@ public final class PylintPlugin {
 
     private static final Logger LOG = com.intellij.openapi.diagnostic.Logger.getInstance(PylintPlugin.class);
 
+    private static final long NO_TIMEOUT = 0L;
+
     private final Set<Future<?>> checksInProgress = new HashSet<>();
     private final Project project;
 
@@ -141,7 +143,7 @@ public final class PylintPlugin {
         }
 
         try {
-            return whenFinished(runAsyncCheck(new ScanFiles(this, files))).get();
+            return whenFinished(runAsyncCheck(new ScanFiles(this, files)), NO_TIMEOUT).get();
         } catch (final Throwable e) {
             LOG.warn("ERROR scanning files", e);
             return Collections.emptyMap();

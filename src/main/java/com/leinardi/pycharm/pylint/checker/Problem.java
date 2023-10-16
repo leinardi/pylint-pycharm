@@ -22,10 +22,9 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.leinardi.pycharm.pylint.PylintBundle;
 import com.leinardi.pycharm.pylint.plapi.SeverityLevel;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class Problem {
     private final PsiElement target;
@@ -103,53 +102,51 @@ public class Problem {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("target", target)
-                .append("message", message)
-                .append("messageId", messageId)
-                .append("severityLevel", severityLevel)
-                .append("line", line)
-                .append("column", column)
-                .append("symbol", symbol)
-                .append("afterEndOfLine", afterEndOfLine)
-                .append("suppressErrors", suppressErrors)
-                .toString();
+        return "Problem{" +
+                "target=" + target +
+                ", severityLevel=" + severityLevel +
+                ", line=" + line +
+                ", column=" + column +
+                ", symbol='" + symbol + '\'' +
+                ", message='" + message + '\'' +
+                ", messageId='" + messageId + '\'' +
+                ", afterEndOfLine=" + afterEndOfLine +
+                ", suppressErrors=" + suppressErrors +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Problem)) {
+            return false;
+        }
+        Problem problem = (Problem) o;
+        return line == problem.line &&
+                column == problem.column &&
+                afterEndOfLine == problem.afterEndOfLine &&
+                suppressErrors == problem.suppressErrors &&
+                Objects.equals(target, problem.target) &&
+                severityLevel == problem.severityLevel &&
+                Objects.equals(symbol, problem.symbol) &&
+                Objects.equals(message, problem.message) &&
+                Objects.equals(messageId, problem.messageId);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(target)
-                .append(message)
-                .append(messageId)
-                .append(severityLevel)
-                .append(line)
-                .append(column)
-                .append(symbol)
-                .append(afterEndOfLine)
-                .append(suppressErrors)
-                .toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof Problem)) {
-            return false;
-        }
-        Problem rhs = ((Problem) other);
-        return new EqualsBuilder()
-                .append(target, rhs.target)
-                .append(message, rhs.message)
-                .append(messageId, rhs.messageId)
-                .append(severityLevel, rhs.severityLevel)
-                .append(line, rhs.line)
-                .append(column, rhs.column)
-                .append(symbol, rhs.symbol)
-                .append(afterEndOfLine, rhs.afterEndOfLine)
-                .append(suppressErrors, rhs.suppressErrors)
-                .isEquals();
+        return Objects.hash(
+                target,
+                severityLevel,
+                line,
+                column,
+                symbol,
+                message,
+                messageId,
+                afterEndOfLine,
+                suppressErrors
+        );
     }
 }

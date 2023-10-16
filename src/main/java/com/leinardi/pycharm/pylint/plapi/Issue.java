@@ -16,15 +16,13 @@
 
 package com.leinardi.pycharm.pylint.plapi;
 
+import com.squareup.moshi.Json;
+
+import java.util.Objects;
+
 /**
  * An issue as reported by the Pylint tool.
  */
-
-import com.squareup.moshi.Json;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 public class Issue {
 
     @Json(name = "type")
@@ -120,53 +118,41 @@ public class Issue {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("type", severityLevel)
-                .append("module", module)
-                .append("obj", obj)
-                .append("line", line)
-                .append("column", column)
-                .append("path", path)
-                .append("symbol", symbol)
-                .append("message", message)
-                .append("messageId", messageId).toString();
+        return "Issue{" +
+                "severityLevel=" + severityLevel +
+                ", module='" + module + '\'' +
+                ", obj='" + obj + '\'' +
+                ", line=" + line +
+                ", column=" + column +
+                ", path='" + path + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", message='" + message + '\'' +
+                ", messageId='" + messageId + '\'' +
+                '}';
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(message)
-                .append(module)
-                .append(symbol)
-                .append(path)
-                .append(column)
-                .append(line)
-                .append(obj)
-                .append(messageId)
-                .append(severityLevel)
-                .toHashCode();
+        return Objects.hash(severityLevel, module, obj, line, column, path, symbol, message, messageId);
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(other instanceof Issue)) {
+        if (!(o instanceof Issue)) {
             return false;
         }
-        Issue rhs = ((Issue) other);
-        return new EqualsBuilder()
-                .append(message, rhs.message)
-                .append(module, rhs.module)
-                .append(symbol, rhs.symbol)
-                .append(path, rhs.path)
-                .append(column, rhs.column)
-                .append(line, rhs.line)
-                .append(obj, rhs.obj)
-                .append(messageId, rhs.messageId)
-                .append(severityLevel, rhs.severityLevel)
-                .isEquals();
+        Issue issue = (Issue) o;
+        return line == issue.line &&
+                column == issue.column &&
+                severityLevel == issue.severityLevel &&
+                Objects.equals(module, issue.module) &&
+                Objects.equals(obj, issue.obj) &&
+                Objects.equals(path, issue.path) &&
+                Objects.equals(symbol, issue.symbol) &&
+                Objects.equals(message, issue.message) &&
+                Objects.equals(messageId, issue.messageId);
     }
-
 }
