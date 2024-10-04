@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.leinardi.pycharm.pylint.toolwindow.PylintToolWindowPanel;
 import org.jetbrains.annotations.NotNull;

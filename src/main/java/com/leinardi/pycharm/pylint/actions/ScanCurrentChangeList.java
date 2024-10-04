@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.diagnostic.Logger;
@@ -38,6 +39,11 @@ import java.util.List;
 public class ScanCurrentChangeList extends BaseAction {
 
     private static final Logger LOG = Logger.getInstance(ScanCurrentChangeList.class);
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 
     @Override
     public final void actionPerformed(final @NotNull AnActionEvent event) {
