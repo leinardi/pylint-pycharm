@@ -1,6 +1,6 @@
 **[0.16.3] 2024-10-04**
 
-- Defined action update thread for actions
+- Fix #103 #105: Defined action update thread for actions
 - New: Min IDEA version raised from PC-2022.1.4 to PC-2023.3.6
 - Several dependency updates
 
