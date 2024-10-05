@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ReadAction;
@@ -32,6 +33,11 @@ import org.jetbrains.annotations.NotNull;
  * Action to execute a Pylint scan on the current project.
  */
 public class ScanProject extends BaseAction {
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 
     @Override
     public void actionPerformed(final @NotNull AnActionEvent event) {

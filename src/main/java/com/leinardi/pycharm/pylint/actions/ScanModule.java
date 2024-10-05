@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ReadAction;
@@ -38,6 +39,11 @@ import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
  * Action to execute a Pylint scan on the current module.
  */
 public class ScanModule extends BaseAction {
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 
     @Override
     public final void actionPerformed(final @NotNull AnActionEvent event) {

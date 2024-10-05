@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareToggleAction;
 import com.intellij.openapi.project.Project;
@@ -32,6 +33,11 @@ import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
  * Action to toggle error display in tool window.
  */
 public class DisplayWarnings extends DumbAwareToggleAction {
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+    }
 
     @Override
     public boolean isSelected(final @NotNull AnActionEvent event) {
