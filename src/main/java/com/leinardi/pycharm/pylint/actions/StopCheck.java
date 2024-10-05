@@ -16,6 +16,7 @@
 
 package com.leinardi.pycharm.pylint.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.wm.ToolWindow;
@@ -28,6 +29,11 @@ import static com.leinardi.pycharm.pylint.actions.ToolWindowAccess.toolWindow;
  * Action to stop a check in progress.
  */
 public class StopCheck extends BaseAction {
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 
     @Override
     public void actionPerformed(final @NotNull AnActionEvent event) {
