@@ -1,3 +1,7 @@
+**[0.16.4] 2024-10-05**
+
+- Defined action update thread for actions for ScrollToSource
+
 **[0.16.3] 2024-10-05**
 
 - Fix #103 #105: Defined action update thread for actions
