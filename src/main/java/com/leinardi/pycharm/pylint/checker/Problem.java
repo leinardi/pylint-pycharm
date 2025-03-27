@@ -58,7 +58,8 @@ public class Problem {
     }
 
     public void createAnnotation(@NotNull AnnotationHolder holder, @NotNull HighlightSeverity severity) {
-        String message = PylintBundle.message("inspection.message", getMessage());
+        String formattedMsg = String.format("%s [%s]", getMessage(), getSymbol());
+        String message = PylintBundle.message("inspection.message", formattedMsg);
         AnnotationBuilder annotation = holder
                 .newAnnotation(severity, message)
                 .range(target.getTextRange());
