@@ -1,6 +1,13 @@
+> ⚠️ **This plugin is no longer maintained.**  
+> A new and actively maintained version of the Pylint plugin is now available thanks to the work of [@szabope](https://github.com/szabope), who rewrote it entirely. While not a direct 1:1 replacement, the new plugin offers an improved and modernized experience for PyCharm users.
+>
+> 🔄 **New Plugin:** [Pylint - JetBrains Marketplace](https://plugins.jetbrains.com/plugin/26358-pylint/)  
+> 🛠️ **Source Code:** [github.com/szabope/pylint-pycharm-plugin](https://github.com/szabope/pylint-pycharm-plugin)
+>
+> Thank you [@szabope](https://github.com/szabope) for taking over and breathing new life into this project!
+
 # pylint-pycharm
 [![GitHub (pre-)release](https://img.shields.io/github/release/leinardi/pylint-pycharm/all.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/releases)
-[![Travis](https://img.shields.io/travis/leinardi/pylint-pycharm/master.svg?style=plastic)](https://travis-ci.org/leinardi/pylint-pycharm)
 [![GitHub license](https://img.shields.io/github/license/leinardi/pylint-pycharm.svg?style=plastic)](https://github.com/leinardi/pylint-pycharm/blob/master/LICENSE) 
 [![Stars](https://img.shields.io/github/stars/leinardi/pylint-pycharm.svg?style=social&label=Stars)](https://github.com/leinardi/pylint-pycharm/stargazers) 
 
